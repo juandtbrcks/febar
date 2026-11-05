@@ -72,3 +72,58 @@
 - If the agent's answer is long, read only the verdict line.
 - Backup if the app misbehaves: show the same flow in the dashboard (page *Siniestros y Fraude*) and the MLflow traces.
 - End on the ask, not on the architecture slide.
+
+---
+
+## Preguntas de un director de FSI (ES)
+
+> Banco de preguntas por rol con la pista de respuesta. Úsalo para ensayar en español con el cliente.
+
+### Director General / CFO (patrocinador)
+1. **¿Cuánto vale esto para nosotros y en cuánto tiempo?** → MXN 25–35M en el año 1 solo en autos (0.5–1 pt de siniestralidad + ~MXN 15M de reservas); se valida en un piloto de 90 días.
+2. **¿Qué tan confiables son esos números?** → Salen del demo con datos sintéticos y son conservadores (solo cuento un tercio de la redundancia de reservas); lo primero del piloto es recalcularlos con sus siniestros cerrados.
+3. **¿Cuánto cuesta la plataforma y cuándo se paga sola?** → Consumo, piloto en serverless; solo la palanca de fraude da MXN 10–20M al año.
+4. **¿Qué tengo que dejar de pagar o puedo apagar?** → Extractos, copias duplicadas y, con el tiempo, parte del Oracle y de la capa de virtualización.
+5. **¿Qué riesgo corremos si no funciona?** → Piloto con métricas acordadas desde el día 1 y sin tocar la operación (el modelo empieza en modo sombra).
+6. **¿Esto aplica a otros ramos (vida, GMM, daños)?** → Sí: gobierno, pipeline y app se reutilizan; cambian los datos y el modelo.
+
+### Director de Siniestros / Jefe del SIU (dueño de dominio)
+7. **¿Cuánto fraude más vamos a detectar?** → ~80% del fraude está en el 10% de siniestros mejor calificados por el modelo; ~8 veces más eficiente que revisar al azar.
+8. **¿El sistema decide por mis investigadores?** → No. El agente ordena, junta evidencia y redacta; el investigador aprueba cada caso.
+9. **¿Cómo sabemos por qué marcó un siniestro?** → 3 razones del modelo por siniestro (SHAP) más la evidencia del presupuesto del taller.
+10. **¿Qué pasa con los talleres que inflan presupuestos?** → La IA lee los PDF y detecta totales alterados, VIN distintos y fechas previas; los talleres independientes tienen 3.8 veces más fraude que las agencias en los datos del demo.
+11. **¿Mis investigadores tienen que aprender otra herramienta?** → Una app web con su bandeja, notas y chat; su veredicto mejora el modelo.
+12. **¿Cuántos casos más puede llevar mi equipo?** → Meta de +30% con el mismo equipo, medido en el piloto.
+
+### Actuario en Jefe
+13. **¿Las reservas son correctas?** → El chain-ladder sobre datos gobernados muestra MXN 45M de suficiencia (reserva de caso 1.6 veces lo requerido).
+14. **¿Cuánto se acorta el cierre?** → De ~10 horas a menos de 1 por corrida, con una sola definición de siniestralidad e IBNR.
+15. **¿Puedo auditar el cálculo?** → Linaje de la fuente al triángulo, SQL versionado, resultados reproducibles.
+16. **¿Esto me sirve para reportes regulatorios?** → Es la misma capa certificada; los formatos específicos se diseñan después del piloto.
+
+### CDO / Director de TI
+17. **¿Tenemos que migrar el Oracle primero?** → No. La federación lo lee donde está; la migración puede venir después, por partes.
+18. **¿Qué pasa con Denodo?** → Puede consumir Databricks con la identidad de cada usuario; respeta el mismo gobierno.
+19. **¿Cómo se integra con AWS y con el data lake de ciencia de datos?** → Federación y formatos abiertos (Delta, Iceberg); una sola copia de los datos.
+20. **¿Quién mantiene esto?** → Su equipo, con pipelines declarativos, jobs y monitoreo; Databricks acompaña el piloto.
+21. **¿Estamos atados a un proveedor de IA?** → No; el modelo de lenguaje se cambia desde Unity Catalog sin tocar código.
+22. **¿Qué tan rápido escala?** → Serverless y Lakebase con autoescalado (incluso a cero).
+
+### Riesgos, Cumplimiento y Comité de IA
+23. **¿Quién ve datos personales?** → Cada rol ve lo suyo (SIU con PII completa, agente regional solo su región y enmascarada); se demuestra en vivo con la misma consulta en tres roles.
+24. **¿Cómo evitamos que salgan datos en extractos?** → Acceso gobernado en lugar de archivos; todo acceso queda auditado; una copia hecha con rol restringido queda enmascarada para siempre.
+25. **¿Cómo controlamos lo que dice la IA?** → Cada respuesta queda trazada y la califican jueces automáticos (fundamentación, criterio del SIU, seguridad).
+26. **¿Qué pasa con sesgo o desvío del modelo?** → Compuerta champion/challenger, modelo registrado en UC con linaje; monitoreo de desvío y equidad en el alcance del piloto.
+27. **¿Cumple con la regulación mexicana de datos personales y con lo que pide la CNSF?** → Gobierno por política, auditoría y residencia en la región elegida; la validación formal la hace su área de cumplimiento en el piloto.
+
+### Director Comercial
+28. **¿Por qué el comparador convierte tan poco?** → 5.2% contra 40% de los agentes; las cotizaciones no convertidas muestran sensibilidad al precio.
+29. **¿Puedo preguntar yo mismo sin pedirle a BI?** → Sí, con Genie en español sobre las mismas métricas certificadas.
+
+### Preguntas para hacerle a Genie en vivo (desde la app)
+- ¿Cuál es la siniestralidad por paquete y cuál es el más rentable?
+- ¿Qué tanto confirma el SIU los siniestros que el modelo marca como riesgo alto?
+- ¿En qué tipos de taller se concentra el fraude?
+- ¿Nuestras reservas son suficientes? ¿En qué cobertura sobra o falta?
+- ¿Qué canal convierte mejor las cotizaciones y cuánta prima genera?
+- ¿Cuántos casos SIU hay abiertos por región? → luego cambia a agente regional Norte y repítela para mostrar el gobierno por rol.
