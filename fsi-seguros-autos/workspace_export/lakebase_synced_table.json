@@ -1,0 +1,12 @@
+{
+  "synced_table_id": "seguros_siu_lakebase.serving.bandeja_siu",
+  "spec": {
+    "source_table_full_name": "demo_catalog.seguros_ml.bandeja_siu_serving",
+    "primary_key_columns": ["num_siniestro"],
+    "scheduling_policy": "TRIGGERED",
+    "create_database_objects_if_missing": true,
+    "postgres_database": "siu",
+    "branch": "projects/seguros-siu/branches/production",
+    "new_pipeline_spec": {"storage_catalog": "demo_catalog", "storage_schema": "seguros_ml"}
+  }
+}

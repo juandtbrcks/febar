@@ -1,0 +1,8 @@
+{
+  "catalog": "demo_catalog",
+  "cdf_config_id": "siu_expediente",
+  "create_time": "2026-11-05T00:18:48.629Z",
+  "name": "projects/seguros-siu/branches/production/databases/siu/cdf-configs/siu_expediente",
+  "postgres_schema": "siu",
+  "schema": "seguros_siu_expediente"
+}

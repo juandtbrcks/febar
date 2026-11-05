@@ -1,0 +1,19 @@
+schema_version = 1
+
+[agent]
+framework = "langgraph"
+server = "agentbricks"
+
+# Conversaciones y propuestas de caso pendientes sobreviven reinicios (Lakebase administrado).
+deployment_name = "seguros-siu"
+[session_store]
+name = "seguros-siu-sessions"
+
+# Mismo experimento que la app Streamlit: los traces llevan tags.origen = 'agentbricks'.
+[tracing]
+experiment_name = "/Users/<tu_usuario>/seguros_agente_siu"
+
+# Las herramientas SQL corren con el token del investigador → ABAC (rol/región/PII) de Unity Catalog.
+[auth.user]
+required = true
+additional_api_scopes = ["sql"]

@@ -1,0 +1,34 @@
+[project]
+name = "seguros-agente-siu"
+version = "0.1.0"
+description = "Agente Investigador SIU (Aseguradora FSI · Autos) — LangGraph sobre Agent Bricks"
+requires-python = ">=3.11"
+dependencies = [
+    "databricks-agentbricks[langgraph]>=0.6.0",
+    "databricks-langchain==0.21.0",
+    "mcp<2",
+    "openai>=1.40",
+    "uvicorn>=0.41.0",
+    "python-dotenv>=1.2.1",
+    "databricks-sdk>=0.124.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["agent", "runtime"]
+
+[dependency-groups]
+dev = ["pytest>=9.0.2", "pytest-asyncio>=1.3.0"]
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[project.scripts]
+start-server = "runtime.main:main"
