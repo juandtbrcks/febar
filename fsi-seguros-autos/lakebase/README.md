@@ -1,7 +1,7 @@
 # FSI SIU — Expediente operativo en Lakebase
 
 **Lakebase Autoscaling** proyecto `seguros-siu` (PG 17, 0.5–2 CU) · base `siu` · endpoint `<LAKEBASE_HOST>`
-Catálogo UC: `seguros_siu_lakebase` (la base `siu` registrada en Unity Catalog). App: `seguros-agente-siu` (recurso Lakebase `lakebase`, SP `3fa76d56-…`).
+Catálogo UC: `seguros_siu_lakebase` (la base `siu` registrada en Unity Catalog). App: `seguros-agente-siu` (recurso Lakebase `lakebase`, SP de la app).
 
 ```
  LAKEHOUSE (Delta, ABAC)                         LAKEBASE (Postgres, RLS)                        APP seguros-agente-siu

@@ -1,0 +1,169 @@
+# Agent end-to-end test: investigate → propose case → approve / reject → ABAC by region
+# Databricks job run 714599050328196 (task run 442442564962423) · state=SUCCESS · task={"python_file": "/Workspace/Users/<tu_usuario>/seguros_demo/agente/prueba/prueba_agente.py"}
+# stdout captured with `databricks jobs get-run-output` (truncated=False)
+
+=== 1. Investigación
+
+
+  Expected `str` but got `list` - serialized value may not be as expected
+
+
+  → herramientas: [('detalle_siniestro', '{"num_siniestro":"S202600000146"}'), ('evidencia_documental', '{"num_siniestro":"S202600000146"}'), ('historial_cliente', '{"num_siniestro":"S202600000146"}'), ('perfil_taller', '{"num_siniestro":"S202600000146"}')] | thoughtSignature: True
+  RESPUESTA:
+ A continuación presento el análisis integral y el dictamen preliminar del siniestro **S202600000146**:
+
+---
+
+### **DICTAMEN PRELIMINAR DE INVESTIGACIÓN SIU**
+
+#### **1. Resumen del Caso**
+- **Siniestro:** S202600000146
+- **Asegurado:** Alberto Ramírez Navarro (Segmento Masivo, 1 año de antigüedad, sin crédito FSI).
+- **Vehículo:** Volkswagen Vento 2014 (Paquete Flotilla).
+- **Causa declarada:** Inundación en Puebla (ocurrido el 23/06/2026 a las 07:41 hrs).
+- **Monto reclamado:** $120,452.79 MXN (representa el 74.45% del valor comercial del vehículo).
+- **Taller asignado:** Carrocerías Jiménez Express (Puebla).
+- **Evaluación del Modelo:** Probabilidad de fraude del **94.63%** (**Nivel de Riesgo: Alto**).
+
+---
+
+#### **2. Señales de Alerta (Riesgos Detectados)**
+1. **Inconsistencias Críticas en Evidencia Documental (Lectura IA):**
+   - **Discrepancia en VIN:** El VIN extraído del presupuesto no coincide con el vehículo asegurado en póliza.
+   - **Sobreprecio/Alteración de montos:** El presupuesto físico en PDF reporta **$180,374.33 MXN**, mientras que lo capturado en sistema fue **$125,065.76 MXN** (una diferencia del **44.2%** por encima de lo registrado).
+2. **Redes y Terceros Sospechosos:**
+   - Involucramiento de 2 terceros, de los cuales **1 es recurrente** (aparece en otros siniestros previos).
+3. **Agente y Entorno:**
+   - Asociado a un agente con alta siniestralidad histórica.
+   - Sin reporte a la autoridad (en un evento de inundación con terceros involucrados).
+4. **Severidad del Daño:**
+   - Monto reclamado ($120,452.79 MXN) representa casi tres cuartas partes (**74.45%**) del valor total del vehículo para un modelo 2014.
+
+---
+
+#### **3. Señales Atenuantes**
+- **Historial del Cliente:** El asegurado no cuenta con fraudes confirmados previos y este es su pri
+  PENDIENTE: None
+=== 2. Pedir caso (interrupt)
+  RESPUESTA:
+ A continuación presento el análisis integral y el dictamen preliminar del siniestro **S202600000146**:
+
+---
+
+### **DICTAMEN PRELIMINAR DE INVESTIGACIÓN SIU**
+
+#### **1. Resumen del Caso**
+- **Siniestro:** S202600000146
+- **Asegurado:** Alberto Ramírez Navarro (Segmento Masivo, 1 año de antigüedad, sin crédito FSI).
+- **Vehículo:** Volkswagen Vento 2014 (Paquete Flotilla).
+- **Causa declarada:** Inundación en Puebla (ocurrido el 23/06/2026 a las 07:41 hrs).
+- **Monto reclamado:** $120,452.79 MXN (representa el 74.45% del valor comercial del vehículo).
+- **Taller asignado:** Carrocerías Jiménez Express (Puebla).
+- **Evaluación del Modelo:** Probabilidad de fraude del **94.63%** (**Nivel de Riesgo: Alto**).
+
+---
+
+#### **2. Señales de Alerta (Riesgos Detectados)**
+1. **Inconsistencias Críticas en Evidencia Documental (Lectura IA):**
+   - **Discrepancia en VIN:** El VIN extraído del presupuesto no coincide con el vehículo asegurado en póliza.
+   - **Sobreprecio/Alteración de montos:** El presupuesto físico en PDF reporta **$180,374.33 MXN**, mientras que lo capturado en sistema fue **$125,065.76 MXN** (una diferencia del **44.2%** por encima de lo registrado).
+2. **Redes y Terceros Sospechosos:**
+   - Involucramiento de 2 terceros, de los cuales **1 es recurrente** (aparece en otros siniestros previos).
+3. **Agente y Entorno:**
+   - Asociado a un agente con alta siniestralidad histórica.
+   - Sin reporte a la autoridad (en un evento de inundación con terceros involucrados).
+4. **Severidad del Daño:**
+   - Monto reclamado ($120,452.79 MXN) representa casi tres cuartas partes (**74.45%**) del valor total del vehículo para un modelo 2014.
+
+---
+
+#### **3. Señales Atenuantes**
+- **Historial del Cliente:** El asegurado no cuenta con fraudes confirmados previos y este es su pri
+  → herramientas: [('abrir_caso_investigacion', '{"prioridad":"Alta","recomendacion":"Realizar inspección pericial física inmediata para cotejar VIN, aclarar discrepancia de presupuesto del 44.2% con el taller e investigar al tercero recurrente.","num_siniestro":"S202600000146","monto_en_riesgo":180374.33,"resumen":"Siniestro con 94.63% de probabilidad de fraude. Presenta inconsistencia crítica en el VIN documental respecto al asegurado, presupuesto en PDF 44.2% mayor a lo capturado ($180,374.33 vs $125,065.76 MXN) y presencia de un tercero recurrente en otros siniestros."}')] | thoughtSignature: True
+  PENDIENTE: {"tipo": "aprobacion_caso", "propuesta": {"prioridad": "Alta", "recomendacion": "Realizar inspección pericial física inmediata para cotejar VIN, aclarar discrepancia de presupuesto del 44.2% con el taller e investigar al tercero recurrente.", "num_siniestro": "S202600000146", "monto_en_riesgo": 180374.33, "resumen": "Siniestro con 94.63% de probabilidad de fraude. Presenta inconsistencia crítica en el VIN documental respecto al asegurado, presupuesto en PDF 44.2% mayor a lo capturado ($180,374.33 vs $125,065.76 MXN) y presencia de un tercero recurrente en otros siniestros."}}
+=== 3. Aprobación → reanudar
+
+
+  Expected `str` but got `list` - serialized value may not be as expected
+
+
+  RESPUESTA:
+ A continuación presento el análisis integral y el dictamen preliminar del siniestro **S202600000146**:
+
+---
+
+### **DICTAMEN PRELIMINAR DE INVESTIGACIÓN SIU**
+
+#### **1. Resumen del Caso**
+- **Siniestro:** S202600000146
+- **Asegurado:** Alberto Ramírez Navarro (Segmento Masivo, 1 año de antigüedad, sin crédito FSI).
+- **Vehículo:** Volkswagen Vento 2014 (Paquete Flotilla).
+- **Causa declarada:** Inundación en Puebla (ocurrido el 23/06/2026 a las 07:41 hrs).
+- **Monto reclamado:** $120,452.79 MXN (representa el 74.45% del valor comercial del vehículo).
+- **Taller asignado:** Carrocerías Jiménez Express (Puebla).
+- **Evaluación del Modelo:** Probabilidad de fraude del **94.63%** (**Nivel de Riesgo: Alto**).
+
+---
+
+#### **2. Señales de Alerta (Riesgos Detectados)**
+1. **Inconsistencias Críticas en Evidencia Documental (Lectura IA):**
+   - **Discrepancia en VIN:** El VIN extraído del presupuesto no coincide con el vehículo asegurado en póliza.
+   - **Sobreprecio/Alteración de montos:** El presupuesto físico en PDF reporta **$180,374.33 MXN**, mientras que lo capturado en sistema fue **$125,065.76 MXN** (una diferencia del **44.2%** por encima de lo registrado).
+2. **Redes y Terceros Sospechosos:**
+   - Involucramiento de 2 terceros, de los cuales **1 es recurrente** (aparece en otros siniestros previos).
+3. **Agente y Entorno:**
+   - Asociado a un agente con alta siniestralidad histórica.
+   - Sin reporte a la autoridad (en un evento de inundación con terceros involucrados).
+4. **Severidad del Daño:**
+   - Monto reclamado ($120,452.79 MXN) representa casi tres cuartas partes (**74.45%**) del valor total del vehículo para un modelo 2014.
+
+---
+
+#### **3. Señales Atenuantes**
+- **Historial del Cliente:** El asegurado no cuenta con fraudes confirmados previos y este es su pri
+  → herramientas: [('abrir_caso_investigacion', '{"prioridad":"Alta","recomendacion":"Realizar inspección pericial física inmediata para cotejar VIN, aclarar discrepancia de presupuesto del 44.2% con el taller e investigar al tercero recurrente.","num_siniestro":"S202600000146","monto_en_riesgo":180374.33,"resumen":"Siniestro con 94.63% de probabilidad de fraude. Presenta inconsistencia crítica en el VIN documental respecto al asegurado, presupuesto en PDF 44.2% mayor a lo capturado ($180,374.33 vs $125,065.76 MXN) y presencia de un tercero recurrente en otros siniestros."}')] | thoughtSignature: True
+  RESPUESTA:
+ El caso de investigación formal ha sido registrado exitosamente.
+
+### **Detalles del Caso Registrado**
+- **Folio de Caso SIU:** `SIU-83FC86F8`
+- **Siniestro:** S202600000146
+- **Prioridad:** Alta
+- **Monto en Riesgo:** $180,374.33 MXN
+- **Estatus:** Registrado en `casos_investigacion` (Aprobado por el investigador)
+
+**Siguientes pasos recomendados en campo:**
+1. Programar inspección física vehicular para confrontar el VIN grabado en chasis con el presupuesto y la póliza.
+2. Solicitar aclaración formal a *Carrocerías Jiménez Express* sobre el presupuesto físico vs. lo capturado en sistema.
+3. Turnar datos del tercero recurrente para cruce en la red de siniestros.
+  PENDIENTE: None
+=== 4. Rechazo
+  → herramientas: [('detalle_siniestro', '{"num_siniestro":"S202600005219"}')] | thoughtSignature: True
+  → herramientas: [('abrir_caso_investigacion', '{"prioridad":"Baja","recomendacion":"Abrir caso formal de investigación SIU por reporte tardío según instrucción del investigador. Se sugiere validar incongruencia de geolocalización (55 km de distancia) y antecedentes de terceros recurrentes.","num_siniestro":"S202600005219","monto_en_riesgo":26591.97,"resumen":"Siniestro S202600005219 reportado vía App en Chihuahua con monto reclamado de $26,591.97 MXN. Se apertura caso por reporte tardío a solicitud del investigador, identificando además discrepancia de GPS y presencia de terceros recurrentes."}')] | thoughtSignature: True
+  PENDIENTE: {"tipo": "aprobacion_caso", "propuesta": {"prioridad": "Baja", "recomendacion": "Abrir caso formal de investigación SIU por reporte tardío según instrucción del investigador. Se sugiere validar incongruencia de geolocalización (55 km de distancia) y antecedentes de terceros recurrentes.", "num_siniestro": "S202600005219", "monto_en_riesgo": 26591.97, "resumen": "Siniestro S202600005219 reportado vía App en Chihuahua con monto reclamado de $26,591.97 MXN. Se apertura caso por reporte tardío a solicitud del investigador, identificando además discrepancia de GPS y presencia de terceros recurrente
+
+
+  Expected `str` but got `list` - serialized value may not be as expected
+
+
+  → herramientas: [('detalle_siniestro', '{"num_siniestro":"S202600005219"}')] | thoughtSignature: True
+  → herramientas: [('abrir_caso_investigacion', '{"prioridad":"Baja","recomendacion":"Abrir caso formal de investigación SIU por reporte tardío según instrucción del investigador. Se sugiere validar incongruencia de geolocalización (55 km de distancia) y antecedentes de terceros recurrentes.","num_siniestro":"S202600005219","monto_en_riesgo":26591.97,"resumen":"Siniestro S202600005219 reportado vía App en Chihuahua con monto reclamado de $26,591.97 MXN. Se apertura caso por reporte tardío a solicitud del investigador, identificando además discrepancia de GPS y presencia de terceros recurrentes."}')] | thoughtSignature: True
+  RESPUESTA:
+ La propuesta para abrir el caso de investigación con prioridad **Baja** para el siniestro **S202600005219** ha sido procesada, pero **fue rechazada en el flujo de confirmación**. Por lo tanto, **no se registró la apertura del caso**.
+
+### Resumen del siniestro:
+* **Número de siniestro:** S202600005219
+* **Vehículo:** Kia Sportage 2013 (Paquete Plataformas)
+* **Monto reclamado:** $26,591.97 MXN
+* **Cobertura:** Responsabilidad Civil (Daño a tercero en colisión)
+* **Ubicación:** Chihuahua, Región Norte
+* **Motivo solicitado:** Reporte tardío (7.0 horas tras ocurrencia nocturna)
+* **Alertas adicionales del modelo:** Nivel de riesgo Alto (Probabilidad de fraude: 99.87%), presencia de terceros recurrentes en otros siniestros y GPS de la aplicación a 55.01 km del lugar declarado.
+
+Si deseas que se vuelva a someter a aprobación con otros parámetros o prioridad, o si requieres una investigación preliminar completa de los antecedentes del cliente, taller y evidencia documental, indícalo.
+  PENDIENTE: None
+=== 5. Casos registrados
+[{'id_caso': 'SIU-83FC86F8', 'num_siniestro': 'S202600000146', 'prioridad': 'Alta', 'creado_por': '<tu_usuario>', 'aprobado_por': '<tu_usuario>', 'estatus': 'Abierto'}]
+
+
+[Trace(trace_id='tr-bd05ed509711039fdb06a38cbbe89b15'), Trace(trace_id='tr-766275cc9c988fd9ea1a1bdd8fee2929'), Trace(trace_id='tr-67004b8daf5c225e1de35bf047d155fb'), Trace(trace_id='tr-df342451819f7d8b911a5113a3debf65')]
