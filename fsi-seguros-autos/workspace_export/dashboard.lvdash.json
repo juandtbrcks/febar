@@ -4,84 +4,325 @@
       "name": "ds_kpi_cartera",
       "displayName": "ds_kpi_cartera",
       "queryLines": [
-        "SELECT ROUND(MEASURE(`Prima Emitida`),0) prima_emitida, ROUND(MEASURE(`Prima Devengada`),0) prima_devengada, MEASURE(`Pólizas Vigentes`) vigentes, ROUND(MEASURE(`Siniestralidad %`)*100,1) siniestralidad, ROUND(MEASURE(`Frecuencia`)*100,1) frecuencia, ROUND(MEASURE(`Severidad`),0) severidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad"
+        "SELECT ROUND(MEASURE(`Prima Emitida`),0) prima_emitida, ROUND(MEASURE(`Prima Devengada`),0) prima_devengada, MEASURE(`Pólizas Vigentes`) vigentes, ROUND(MEASURE(`Siniestralidad %`)*100,1) siniestralidad, ROUND(MEASURE(`Frecuencia`)*100,1) frecuencia, ROUND(MEASURE(`Severidad`),0) severidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad WHERE (:anio IS NULL OR array_contains(:anio, `Año Suscripción`)) AND (:region IS NULL OR array_contains(:region, `Región`)) AND (:canal IS NULL OR array_contains(:canal, `Canal de Venta`))"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Región",
+          "keyword": "region",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Canal",
+          "keyword": "canal",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
       "name": "ds_anio",
       "displayName": "ds_anio",
       "queryLines": [
-        "SELECT `Año Suscripción` anio, ROUND(MEASURE(`Prima Emitida`),0) prima, ROUND(MEASURE(`Costo Incurrido`),0) incurrido, ROUND(MEASURE(`Siniestralidad %`)*100,1) siniestralidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad GROUP BY 1 ORDER BY 1"
+        "SELECT `Año Suscripción` anio, ROUND(MEASURE(`Prima Emitida`),0) prima, ROUND(MEASURE(`Costo Incurrido`),0) incurrido, ROUND(MEASURE(`Siniestralidad %`)*100,1) siniestralidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad WHERE (:anio IS NULL OR array_contains(:anio, `Año Suscripción`)) AND (:region IS NULL OR array_contains(:region, `Región`)) AND (:canal IS NULL OR array_contains(:canal, `Canal de Venta`)) GROUP BY 1 ORDER BY 1"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Región",
+          "keyword": "region",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Canal",
+          "keyword": "canal",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
       "name": "ds_paquete",
       "displayName": "ds_paquete",
       "queryLines": [
-        "SELECT `Paquete` paquete, ROUND(MEASURE(`Prima Emitida`),0) prima, ROUND(MEASURE(`Siniestralidad %`)*100,1) siniestralidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad GROUP BY 1 ORDER BY prima DESC"
+        "SELECT `Paquete` paquete, ROUND(MEASURE(`Prima Emitida`),0) prima, ROUND(MEASURE(`Siniestralidad %`)*100,1) siniestralidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad WHERE (:anio IS NULL OR array_contains(:anio, `Año Suscripción`)) AND (:region IS NULL OR array_contains(:region, `Región`)) AND (:canal IS NULL OR array_contains(:canal, `Canal de Venta`)) GROUP BY 1 ORDER BY prima DESC"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Región",
+          "keyword": "region",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Canal",
+          "keyword": "canal",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
       "name": "ds_region",
       "displayName": "ds_region",
       "queryLines": [
-        "SELECT `Región` region, ROUND(MEASURE(`Prima Emitida`),0) prima, ROUND(MEASURE(`Siniestralidad %`)*100,1) siniestralidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad GROUP BY 1 ORDER BY prima DESC"
+        "SELECT `Región` region, ROUND(MEASURE(`Prima Emitida`),0) prima, ROUND(MEASURE(`Siniestralidad %`)*100,1) siniestralidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad WHERE (:anio IS NULL OR array_contains(:anio, `Año Suscripción`)) AND (:region IS NULL OR array_contains(:region, `Región`)) AND (:canal IS NULL OR array_contains(:canal, `Canal de Venta`)) GROUP BY 1 ORDER BY prima DESC"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Región",
+          "keyword": "region",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Canal",
+          "keyword": "canal",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
       "name": "ds_canal_venta",
       "displayName": "ds_canal_venta",
       "queryLines": [
-        "SELECT `Canal de Venta` canal, ROUND(MEASURE(`Prima Emitida`),0) prima FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad GROUP BY 1 ORDER BY prima DESC"
+        "SELECT `Canal de Venta` canal, ROUND(MEASURE(`Prima Emitida`),0) prima FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad WHERE (:anio IS NULL OR array_contains(:anio, `Año Suscripción`)) AND (:region IS NULL OR array_contains(:region, `Región`)) AND (:canal IS NULL OR array_contains(:canal, `Canal de Venta`)) GROUP BY 1 ORDER BY prima DESC"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Región",
+          "keyword": "region",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Canal",
+          "keyword": "canal",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
       "name": "ds_uso",
       "displayName": "ds_uso",
       "queryLines": [
-        "SELECT `Uso Vehículo` uso, ROUND(MEASURE(`Frecuencia`)*100,1) frecuencia, ROUND(MEASURE(`Siniestralidad %`)*100,1) siniestralidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad GROUP BY 1 ORDER BY frecuencia DESC"
+        "SELECT `Uso Vehículo` uso, ROUND(MEASURE(`Frecuencia`)*100,1) frecuencia, ROUND(MEASURE(`Siniestralidad %`)*100,1) siniestralidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad WHERE (:anio IS NULL OR array_contains(:anio, `Año Suscripción`)) AND (:region IS NULL OR array_contains(:region, `Región`)) AND (:canal IS NULL OR array_contains(:canal, `Canal de Venta`)) GROUP BY 1 ORDER BY frecuencia DESC"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Región",
+          "keyword": "region",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Canal",
+          "keyword": "canal",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
       "name": "ds_credito",
       "displayName": "ds_credito",
       "queryLines": [
-        "SELECT `Cliente con Crédito del Grupo` credito, MEASURE(`Clientes Únicos`) clientes FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad GROUP BY 1"
+        "SELECT `Cliente con Crédito del Grupo` credito, MEASURE(`Clientes Únicos`) clientes FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad WHERE (:anio IS NULL OR array_contains(:anio, `Año Suscripción`)) AND (:region IS NULL OR array_contains(:region, `Región`)) AND (:canal IS NULL OR array_contains(:canal, `Canal de Venta`)) GROUP BY 1"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Región",
+          "keyword": "region",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Canal",
+          "keyword": "canal",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
       "name": "ds_kpi_sin",
       "displayName": "ds_kpi_sin",
       "queryLines": [
-        "SELECT MEASURE(`Siniestros`) siniestros, ROUND(MEASURE(`Costo Incurrido`),0) incurrido, ROUND(MEASURE(`Reserva Pendiente`),0) reserva, ROUND(MEASURE(`Tasa de Fraude`)*100,1) tasa_fraude, ROUND(MEASURE(`Monto Fraude Detectado`),0) fraude_detectado, ROUND(MEASURE(`Monto en Riesgo de Fraude`),0) monto_riesgo FROM demo_catalog.seguros_demo.mv_siniestros_fraude"
+        "SELECT MEASURE(`Siniestros`) siniestros, ROUND(MEASURE(`Costo Incurrido`),0) incurrido, ROUND(MEASURE(`Reserva Pendiente`),0) reserva, ROUND(MEASURE(`Tasa de Fraude`)*100,1) tasa_fraude, ROUND(MEASURE(`Monto Fraude Detectado`),0) fraude_detectado, ROUND(MEASURE(`Monto en Riesgo de Fraude`),0) monto_riesgo FROM demo_catalog.seguros_demo.mv_siniestros_fraude WHERE (:anio IS NULL OR array_contains(:anio, `Año Ocurrencia`)) AND (:region IS NULL OR array_contains(:region, `Región`))"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Región",
+          "keyword": "region",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
       "name": "ds_sin_mes",
       "displayName": "ds_sin_mes",
       "queryLines": [
-        "SELECT to_date(concat(`Año-Mes Ocurrencia`,'-01')) fecha, MEASURE(`Siniestros`) siniestros, ROUND(MEASURE(`Costo Incurrido`),0) incurrido FROM demo_catalog.seguros_demo.mv_siniestros_fraude GROUP BY 1 ORDER BY 1"
+        "SELECT to_date(concat(`Año-Mes Ocurrencia`,'-01')) fecha, MEASURE(`Siniestros`) siniestros, ROUND(MEASURE(`Costo Incurrido`),0) incurrido FROM demo_catalog.seguros_demo.mv_siniestros_fraude WHERE (:anio IS NULL OR array_contains(:anio, `Año Ocurrencia`)) AND (:region IS NULL OR array_contains(:region, `Región`)) GROUP BY 1 ORDER BY 1"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Región",
+          "keyword": "region",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
       "name": "ds_cobertura",
       "displayName": "ds_cobertura",
       "queryLines": [
-        "SELECT `Cobertura` cobertura, ROUND(MEASURE(`Costo Incurrido`),0) incurrido, ROUND(MEASURE(`Tasa de Fraude`)*100,1) tasa_fraude FROM demo_catalog.seguros_demo.mv_siniestros_fraude GROUP BY 1 ORDER BY incurrido DESC"
+        "SELECT `Cobertura` cobertura, ROUND(MEASURE(`Costo Incurrido`),0) incurrido, ROUND(MEASURE(`Tasa de Fraude`)*100,1) tasa_fraude FROM demo_catalog.seguros_demo.mv_siniestros_fraude WHERE (:anio IS NULL OR array_contains(:anio, `Año Ocurrencia`)) AND (:region IS NULL OR array_contains(:region, `Región`)) GROUP BY 1 ORDER BY incurrido DESC"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Región",
+          "keyword": "region",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
       "name": "ds_taller",
       "displayName": "ds_taller",
       "queryLines": [
-        "SELECT `Tipo de Taller` taller, ROUND(MEASURE(`Tasa de Fraude`)*100,1) tasa_fraude, ROUND(MEASURE(`Presupuesto Taller vs Autorizado`),2) ratio FROM demo_catalog.seguros_demo.mv_siniestros_fraude WHERE `Tipo de Taller` <> 'Sin taller' GROUP BY 1 ORDER BY tasa_fraude DESC"
+        "SELECT `Tipo de Taller` taller, ROUND(MEASURE(`Tasa de Fraude`)*100,1) tasa_fraude, ROUND(MEASURE(`Presupuesto Taller vs Autorizado`),2) ratio FROM demo_catalog.seguros_demo.mv_siniestros_fraude WHERE (:anio IS NULL OR array_contains(:anio, `Año Ocurrencia`)) AND (:region IS NULL OR array_contains(:region, `Región`)) AND `Tipo de Taller` <> 'Sin taller' GROUP BY 1 ORDER BY tasa_fraude DESC"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Región",
+          "keyword": "region",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
       "name": "ds_nivel",
       "displayName": "ds_nivel",
       "queryLines": [
-        "SELECT `Nivel Riesgo Fraude` nivel, MEASURE(`Siniestros`) siniestros, ROUND(MEASURE(`Monto en Riesgo de Fraude`),0) monto_riesgo FROM demo_catalog.seguros_demo.mv_siniestros_fraude WHERE `Nivel Riesgo Fraude` IN ('Alto','Medio','Bajo') GROUP BY 1"
+        "SELECT `Nivel Riesgo Fraude` nivel, MEASURE(`Siniestros`) siniestros, ROUND(MEASURE(`Monto en Riesgo de Fraude`),0) monto_riesgo FROM demo_catalog.seguros_demo.mv_siniestros_fraude WHERE (:anio IS NULL OR array_contains(:anio, `Año Ocurrencia`)) AND (:region IS NULL OR array_contains(:region, `Región`)) AND `Nivel Riesgo Fraude` IN ('Alto','Medio','Bajo') GROUP BY 1"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Región",
+          "keyword": "region",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
@@ -123,35 +364,108 @@
       "name": "ds_kpi_com",
       "displayName": "ds_kpi_com",
       "queryLines": [
-        "SELECT MEASURE(`Cotizaciones`) cotizaciones, ROUND(MEASURE(`Tasa de Conversión`)*100,1) conversion, ROUND(MEASURE(`Prima Emitida (convertidas)`),0) prima, ROUND(MEASURE(`Prima Cotizada Promedio`),0) prima_prom FROM demo_catalog.seguros_demo.mv_comercial_canales"
+        "SELECT MEASURE(`Cotizaciones`) cotizaciones, ROUND(MEASURE(`Tasa de Conversión`)*100,1) conversion, ROUND(MEASURE(`Prima Emitida (convertidas)`),0) prima, ROUND(MEASURE(`Prima Cotizada Promedio`),0) prima_prom FROM demo_catalog.seguros_demo.mv_comercial_canales WHERE (:anio IS NULL OR array_contains(:anio, `Año`)) AND (:canal IS NULL OR array_contains(:canal, `Canal`))"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Canal",
+          "keyword": "canal",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
       "name": "ds_canal",
       "displayName": "ds_canal",
       "queryLines": [
-        "SELECT `Canal` canal, MEASURE(`Cotizaciones`) cotizaciones, ROUND(MEASURE(`Tasa de Conversión`)*100,1) conversion, ROUND(MEASURE(`Prima Emitida (convertidas)`),0) prima, ROUND(MEASURE(`Brecha de Precio No Convertidas`)*100,1) brecha FROM demo_catalog.seguros_demo.mv_comercial_canales GROUP BY 1 ORDER BY cotizaciones DESC"
+        "SELECT `Canal` canal, MEASURE(`Cotizaciones`) cotizaciones, ROUND(MEASURE(`Tasa de Conversión`)*100,1) conversion, ROUND(MEASURE(`Prima Emitida (convertidas)`),0) prima, ROUND(MEASURE(`Brecha de Precio No Convertidas`)*100,1) brecha FROM demo_catalog.seguros_demo.mv_comercial_canales WHERE (:anio IS NULL OR array_contains(:anio, `Año`)) AND (:canal IS NULL OR array_contains(:canal, `Canal`)) GROUP BY 1 ORDER BY cotizaciones DESC"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Canal",
+          "keyword": "canal",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
       "name": "ds_cot_mes",
       "displayName": "ds_cot_mes",
       "queryLines": [
-        "SELECT to_date(concat(`Año-Mes`,'-01')) fecha, MEASURE(`Cotizaciones`) cotizaciones, MEASURE(`Cotizaciones Convertidas`) convertidas FROM demo_catalog.seguros_demo.mv_comercial_canales GROUP BY 1 ORDER BY 1"
+        "SELECT to_date(concat(`Año-Mes`,'-01')) fecha, MEASURE(`Cotizaciones`) cotizaciones, MEASURE(`Cotizaciones Convertidas`) convertidas FROM demo_catalog.seguros_demo.mv_comercial_canales WHERE (:anio IS NULL OR array_contains(:anio, `Año`)) AND (:canal IS NULL OR array_contains(:canal, `Canal`)) GROUP BY 1 ORDER BY 1"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Canal",
+          "keyword": "canal",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
       "name": "ds_edad",
       "displayName": "ds_edad",
       "queryLines": [
-        "SELECT `Rango Edad Conductor` edad, ROUND(MEASURE(`Tasa de Conversión`)*100,1) conversion FROM demo_catalog.seguros_demo.mv_comercial_canales GROUP BY 1 ORDER BY 1"
+        "SELECT `Rango Edad Conductor` edad, ROUND(MEASURE(`Tasa de Conversión`)*100,1) conversion FROM demo_catalog.seguros_demo.mv_comercial_canales WHERE (:anio IS NULL OR array_contains(:anio, `Año`)) AND (:canal IS NULL OR array_contains(:canal, `Canal`)) GROUP BY 1 ORDER BY 1"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        },
+        {
+          "displayName": "Canal",
+          "keyword": "canal",
+          "dataType": "STRING",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
       "name": "ds_kpi_res",
       "displayName": "ds_kpi_res",
       "queryLines": [
-        "SELECT ROUND(MEASURE(`Pagado`),0) pagado, ROUND(MEASURE(`Reserva de Caso`),0) caso, ROUND(MEASURE(`Reserva Requerida`),0) requerida, ROUND(MEASURE(`Suficiencia de Reserva`),0) suficiencia, ROUND(MEASURE(`Suficiencia %`)*100,1) suficiencia_pct FROM demo_catalog.seguros_demo.mv_reservas_actuariales"
+        "SELECT ROUND(MEASURE(`Pagado`),0) pagado, ROUND(MEASURE(`Reserva de Caso`),0) caso, ROUND(MEASURE(`Reserva Requerida`),0) requerida, ROUND(MEASURE(`Suficiencia de Reserva`),0) suficiencia, ROUND(MEASURE(`Suficiencia %`)*100,1) suficiencia_pct FROM demo_catalog.seguros_demo.mv_reservas_actuariales WHERE (:anio IS NULL OR array_contains(:anio, `Año Cierre Periodo`))"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
@@ -165,7 +479,16 @@
       "name": "ds_res_cob",
       "displayName": "ds_res_cob",
       "queryLines": [
-        "SELECT cobertura, tipo, monto FROM (SELECT `Cobertura` cobertura, ROUND(MEASURE(`Reserva de Caso`),0) caso, ROUND(MEASURE(`Reserva Requerida`),0) req FROM demo_catalog.seguros_demo.mv_reservas_actuariales GROUP BY 1) UNPIVOT (monto FOR tipo IN (caso AS `Reserva de caso constituida`, req AS `Reserva requerida (chain-ladder)`)) ORDER BY cobertura"
+        "SELECT cobertura, tipo, monto FROM (SELECT `Cobertura` cobertura, ROUND(MEASURE(`Reserva de Caso`),0) caso, ROUND(MEASURE(`Reserva Requerida`),0) req FROM demo_catalog.seguros_demo.mv_reservas_actuariales WHERE (:anio IS NULL OR array_contains(:anio, `Año Cierre Periodo`)) GROUP BY 1) UNPIVOT (monto FOR tipo IN (caso AS `Reserva de caso constituida`, req AS `Reserva requerida (chain-ladder)`)) ORDER BY cobertura"
+      ],
+      "parameters": [
+        {
+          "displayName": "Año",
+          "keyword": "anio",
+          "dataType": "INTEGER",
+          "complexType": "MULTI",
+          "defaultSelection": {}
+        }
       ]
     },
     {
@@ -202,6 +525,46 @@
       "queryLines": [
         "SELECT cobertura, periodo_etiqueta periodo, edad_meses, ROUND(pagado,0) pagado, ROUND(reserva_caso,0) caso, ROUND(ultimo_estimado,0) ultimo, ROUND(reserva_requerida,0) requerida, ROUND(suficiencia_reserva,0) suficiencia FROM demo_catalog.seguros_demo.act_reservas WHERE reserva_caso > 0 OR reserva_requerida > 0 ORDER BY reserva_caso DESC"
       ]
+    },
+    {
+      "name": "opc_comercial",
+      "displayName": "Opciones filtros — Comercial",
+      "config": {
+        "version": "1.1",
+        "source": "demo_catalog.seguros_demo.mv_comercial_canales",
+        "dimensions": [
+          {
+            "name": "anio",
+            "expr": "source.`Año`"
+          },
+          {
+            "name": "canal",
+            "expr": "source.`Canal`"
+          }
+        ]
+      }
+    },
+    {
+      "name": "opc_cartera",
+      "displayName": "Opciones filtros — Cartera",
+      "config": {
+        "version": "1.1",
+        "source": "demo_catalog.seguros_demo.mv_cartera_rentabilidad",
+        "dimensions": [
+          {
+            "name": "anio",
+            "expr": "source.`Año Suscripción`"
+          },
+          {
+            "name": "region",
+            "expr": "source.`Región`"
+          },
+          {
+            "name": "canal",
+            "expr": "source.`Canal de Venta`"
+          }
+        ]
+      }
     }
   ],
   "pages": [
@@ -3628,6 +3991,891 @@
         }
       ],
       "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "global_filters",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "f_anio",
+            "queries": [
+              {
+                "name": "dashboards/<ID>/datasets/01f1d946e2c31546aef53c1e2a2eb4b3_anio",
+                "query": {
+                  "datasetName": "opc_cartera",
+                  "fields": [
+                    {
+                      "name": "anio",
+                      "expression": "`anio`"
+                    },
+                    {
+                      "name": "anio_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/<ID>/datasets/01f1d946e274144d9f02c563c101f408_anio",
+                "query": {
+                  "datasetName": "opc_comercial",
+                  "fields": [
+                    {
+                      "name": "anio",
+                      "expression": "`anio`"
+                    },
+                    {
+                      "name": "anio_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f0c9916e54b08537547_anio",
+                "query": {
+                  "datasetName": "ds_kpi_cartera",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f1fbca7798347b670e4_anio",
+                "query": {
+                  "datasetName": "ds_anio",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f20bcbddfcc9865316e_anio",
+                "query": {
+                  "datasetName": "ds_paquete",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f21aa6010d35a30e514_anio",
+                "query": {
+                  "datasetName": "ds_region",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f229299882db4bceacc_anio",
+                "query": {
+                  "datasetName": "ds_canal_venta",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f23a798bfb302f7c16c_anio",
+                "query": {
+                  "datasetName": "ds_uso",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f24bf37615c18ad263c_anio",
+                "query": {
+                  "datasetName": "ds_credito",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f25a51e9c8d4b19e854_anio",
+                "query": {
+                  "datasetName": "ds_kpi_sin",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f259f6428e9158ec6ce_anio",
+                "query": {
+                  "datasetName": "ds_sin_mes",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f26b394073df861eb79_anio",
+                "query": {
+                  "datasetName": "ds_cobertura",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f27b2d8833c49608c7e_anio",
+                "query": {
+                  "datasetName": "ds_taller",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f28b12b73183a554f64_anio",
+                "query": {
+                  "datasetName": "ds_nivel",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3a8e28bf728bc62e16_anio",
+                "query": {
+                  "datasetName": "ds_kpi_com",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3ba443bdb32a42fdf9_anio",
+                "query": {
+                  "datasetName": "ds_canal",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3b9dea13398054b922_anio",
+                "query": {
+                  "datasetName": "ds_cot_mes",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3cb0a8088b8a92e228_anio",
+                "query": {
+                  "datasetName": "ds_edad",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3d9d7fe93de6f54fdb_anio",
+                "query": {
+                  "datasetName": "ds_kpi_res",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3f83c9c724d5ad08ba_anio",
+                "query": {
+                  "datasetName": "ds_res_cob",
+                  "parameters": [
+                    {
+                      "name": "anio",
+                      "keyword": "anio"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Año"
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "anio",
+                    "queryName": "dashboards/<ID>/datasets/01f1d946e2c31546aef53c1e2a2eb4b3_anio"
+                  },
+                  {
+                    "fieldName": "anio",
+                    "queryName": "dashboards/<ID>/datasets/01f1d946e274144d9f02c563c101f408_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f0c9916e54b08537547_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f1fbca7798347b670e4_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f20bcbddfcc9865316e_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f21aa6010d35a30e514_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f229299882db4bceacc_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f23a798bfb302f7c16c_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f24bf37615c18ad263c_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f25a51e9c8d4b19e854_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f259f6428e9158ec6ce_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f26b394073df861eb79_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f27b2d8833c49608c7e_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f28b12b73183a554f64_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3a8e28bf728bc62e16_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3ba443bdb32a42fdf9_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3b9dea13398054b922_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3cb0a8088b8a92e228_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3d9d7fe93de6f54fdb_anio"
+                  },
+                  {
+                    "parameterName": "anio",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3f83c9c724d5ad08ba_anio"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "f_region",
+            "queries": [
+              {
+                "name": "dashboards/<ID>/datasets/01f1d946e2c31546aef53c1e2a2eb4b3_region",
+                "query": {
+                  "datasetName": "opc_cartera",
+                  "fields": [
+                    {
+                      "name": "region",
+                      "expression": "`region`"
+                    },
+                    {
+                      "name": "region_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f0c9916e54b08537547_region",
+                "query": {
+                  "datasetName": "ds_kpi_cartera",
+                  "parameters": [
+                    {
+                      "name": "region",
+                      "keyword": "region"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f1fbca7798347b670e4_region",
+                "query": {
+                  "datasetName": "ds_anio",
+                  "parameters": [
+                    {
+                      "name": "region",
+                      "keyword": "region"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f20bcbddfcc9865316e_region",
+                "query": {
+                  "datasetName": "ds_paquete",
+                  "parameters": [
+                    {
+                      "name": "region",
+                      "keyword": "region"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f21aa6010d35a30e514_region",
+                "query": {
+                  "datasetName": "ds_region",
+                  "parameters": [
+                    {
+                      "name": "region",
+                      "keyword": "region"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f229299882db4bceacc_region",
+                "query": {
+                  "datasetName": "ds_canal_venta",
+                  "parameters": [
+                    {
+                      "name": "region",
+                      "keyword": "region"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f23a798bfb302f7c16c_region",
+                "query": {
+                  "datasetName": "ds_uso",
+                  "parameters": [
+                    {
+                      "name": "region",
+                      "keyword": "region"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f24bf37615c18ad263c_region",
+                "query": {
+                  "datasetName": "ds_credito",
+                  "parameters": [
+                    {
+                      "name": "region",
+                      "keyword": "region"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f25a51e9c8d4b19e854_region",
+                "query": {
+                  "datasetName": "ds_kpi_sin",
+                  "parameters": [
+                    {
+                      "name": "region",
+                      "keyword": "region"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f259f6428e9158ec6ce_region",
+                "query": {
+                  "datasetName": "ds_sin_mes",
+                  "parameters": [
+                    {
+                      "name": "region",
+                      "keyword": "region"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f26b394073df861eb79_region",
+                "query": {
+                  "datasetName": "ds_cobertura",
+                  "parameters": [
+                    {
+                      "name": "region",
+                      "keyword": "region"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f27b2d8833c49608c7e_region",
+                "query": {
+                  "datasetName": "ds_taller",
+                  "parameters": [
+                    {
+                      "name": "region",
+                      "keyword": "region"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f28b12b73183a554f64_region",
+                "query": {
+                  "datasetName": "ds_nivel",
+                  "parameters": [
+                    {
+                      "name": "region",
+                      "keyword": "region"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Región"
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "region",
+                    "queryName": "dashboards/<ID>/datasets/01f1d946e2c31546aef53c1e2a2eb4b3_region"
+                  },
+                  {
+                    "parameterName": "region",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f0c9916e54b08537547_region"
+                  },
+                  {
+                    "parameterName": "region",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f1fbca7798347b670e4_region"
+                  },
+                  {
+                    "parameterName": "region",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f20bcbddfcc9865316e_region"
+                  },
+                  {
+                    "parameterName": "region",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f21aa6010d35a30e514_region"
+                  },
+                  {
+                    "parameterName": "region",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f229299882db4bceacc_region"
+                  },
+                  {
+                    "parameterName": "region",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f23a798bfb302f7c16c_region"
+                  },
+                  {
+                    "parameterName": "region",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f24bf37615c18ad263c_region"
+                  },
+                  {
+                    "parameterName": "region",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f25a51e9c8d4b19e854_region"
+                  },
+                  {
+                    "parameterName": "region",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f259f6428e9158ec6ce_region"
+                  },
+                  {
+                    "parameterName": "region",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f26b394073df861eb79_region"
+                  },
+                  {
+                    "parameterName": "region",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f27b2d8833c49608c7e_region"
+                  },
+                  {
+                    "parameterName": "region",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f28b12b73183a554f64_region"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 0,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "f_canal",
+            "queries": [
+              {
+                "name": "dashboards/<ID>/datasets/01f1d946e2c31546aef53c1e2a2eb4b3_canal",
+                "query": {
+                  "datasetName": "opc_cartera",
+                  "fields": [
+                    {
+                      "name": "canal",
+                      "expression": "`canal`"
+                    },
+                    {
+                      "name": "canal_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/<ID>/datasets/01f1d946e274144d9f02c563c101f408_canal",
+                "query": {
+                  "datasetName": "opc_comercial",
+                  "fields": [
+                    {
+                      "name": "canal",
+                      "expression": "`canal`"
+                    },
+                    {
+                      "name": "canal_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f0c9916e54b08537547_canal",
+                "query": {
+                  "datasetName": "ds_kpi_cartera",
+                  "parameters": [
+                    {
+                      "name": "canal",
+                      "keyword": "canal"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f1fbca7798347b670e4_canal",
+                "query": {
+                  "datasetName": "ds_anio",
+                  "parameters": [
+                    {
+                      "name": "canal",
+                      "keyword": "canal"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f20bcbddfcc9865316e_canal",
+                "query": {
+                  "datasetName": "ds_paquete",
+                  "parameters": [
+                    {
+                      "name": "canal",
+                      "keyword": "canal"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f21aa6010d35a30e514_canal",
+                "query": {
+                  "datasetName": "ds_region",
+                  "parameters": [
+                    {
+                      "name": "canal",
+                      "keyword": "canal"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f229299882db4bceacc_canal",
+                "query": {
+                  "datasetName": "ds_canal_venta",
+                  "parameters": [
+                    {
+                      "name": "canal",
+                      "keyword": "canal"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f23a798bfb302f7c16c_canal",
+                "query": {
+                  "datasetName": "ds_uso",
+                  "parameters": [
+                    {
+                      "name": "canal",
+                      "keyword": "canal"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f24bf37615c18ad263c_canal",
+                "query": {
+                  "datasetName": "ds_credito",
+                  "parameters": [
+                    {
+                      "name": "canal",
+                      "keyword": "canal"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3a8e28bf728bc62e16_canal",
+                "query": {
+                  "datasetName": "ds_kpi_com",
+                  "parameters": [
+                    {
+                      "name": "canal",
+                      "keyword": "canal"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3ba443bdb32a42fdf9_canal",
+                "query": {
+                  "datasetName": "ds_canal",
+                  "parameters": [
+                    {
+                      "name": "canal",
+                      "keyword": "canal"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3b9dea13398054b922_canal",
+                "query": {
+                  "datasetName": "ds_cot_mes",
+                  "parameters": [
+                    {
+                      "name": "canal",
+                      "keyword": "canal"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3cb0a8088b8a92e228_canal",
+                "query": {
+                  "datasetName": "ds_edad",
+                  "parameters": [
+                    {
+                      "name": "canal",
+                      "keyword": "canal"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Canal"
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "canal",
+                    "queryName": "dashboards/<ID>/datasets/01f1d946e2c31546aef53c1e2a2eb4b3_canal"
+                  },
+                  {
+                    "fieldName": "canal",
+                    "queryName": "dashboards/<ID>/datasets/01f1d946e274144d9f02c563c101f408_canal"
+                  },
+                  {
+                    "parameterName": "canal",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f0c9916e54b08537547_canal"
+                  },
+                  {
+                    "parameterName": "canal",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f1fbca7798347b670e4_canal"
+                  },
+                  {
+                    "parameterName": "canal",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f20bcbddfcc9865316e_canal"
+                  },
+                  {
+                    "parameterName": "canal",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f21aa6010d35a30e514_canal"
+                  },
+                  {
+                    "parameterName": "canal",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f229299882db4bceacc_canal"
+                  },
+                  {
+                    "parameterName": "canal",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f23a798bfb302f7c16c_canal"
+                  },
+                  {
+                    "parameterName": "canal",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f24bf37615c18ad263c_canal"
+                  },
+                  {
+                    "parameterName": "canal",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3a8e28bf728bc62e16_canal"
+                  },
+                  {
+                    "parameterName": "canal",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3ba443bdb32a42fdf9_canal"
+                  },
+                  {
+                    "parameterName": "canal",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3b9dea13398054b922_canal"
+                  },
+                  {
+                    "parameterName": "canal",
+                    "queryName": "parameter_dashboards/<ID>/datasets/01f1cb552ce91f3cb0a8088b8a92e228_canal"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 0,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
     }
   ],
   "uiSettings": {

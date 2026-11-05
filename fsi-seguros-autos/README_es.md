@@ -23,7 +23,7 @@ agentes consumen los mismos números con el gobierno viajando con el dato a cada
 | **Gobierno "sin extractos"** | Governed tags (PII, región, certificación), políticas **ABAC** (masking + row filters), sandbox de ciencia de datos, auditoría y linaje | `gobierno/01..05_*.sql`, `gobierno/README.md` |
 | **IA sobre documentos** | `ai_parse_document` + `ai_query` (Claude) con `responseFormat` JSON schema → validación de presupuestos de taller | `documentos/01_extraccion_presupuestos.sql` |
 | **ML de fraude** | Feature Engineering in UC, MLflow (runs anidados, `mlflow.evaluate`, SHAP), UC Model Registry con alias **champion/challenger** y compuerta de calidad, scoring batch | `ml/01_features_entrenamiento.py`, `ml/02_scoring_batch.py`, `workspace_export/job_mlops.json` |
-| **Capa semántica y BI** | 4 **metric views** (YAML v1.1), **AI/BI Dashboard** de 4 páginas, **Genie space** | `semantica/`, `workspace_export/dashboard.lvdash.json`, `workspace_export/genie_space.json` |
+| **Capa semántica y BI** | 4 **metric views** (YAML v1.1), **AI/BI Dashboard** de 4 páginas con filtros globales (año, región, canal), **Genie space** | `semantica/`, `workspace_export/dashboard.lvdash.json`, `workspace_export/genie_space.json` |
 | **Agente investigador de fraude (SIU)** | Databricks App (Streamlit + **LangGraph**), herramientas = funciones de UC ejecutadas **on-behalf-of** del usuario (ABAC aplica), LLM vía **model service de UC / AI Gateway**, human-in-the-loop, MLflow Tracing | `agente/01_funciones_agente.sql`, `agente/app/`, `workspace_export/app_config.json` |
 | **Evaluación y monitoreo del agente** | `mlflow.genai.evaluate` con jueces LLM personalizados (`make_judge`), scorers de código, monitoreo en producción | `agente/eval/` |
 | **Agent Bricks** | El mismo agente en Agent Runtime (Session Store, aprobación como 2ª invocación) | `agente/agentbricks/` |
@@ -77,7 +77,7 @@ Unity Catalog gobierna todo: tags, ABAC, linaje, auditoría, Discover.
 6. **Gobierno** — `gobierno/01_roles_funciones.sql` → `02_tags_politicas.sql` → (`04_permisos.sql` es plantilla) → `03_demo_personas.sql` para cambiar de rol en vivo. Ver `gobierno/README.md`.
 7. **IA sobre documentos** — `documentos/01_extraccion_presupuestos.sql`.
 8. **ML** — importa `ml/*.py` como notebooks y crea el job con `workspace_export/job_mlops.json` (cluster ML single-user).
-9. **Capa semántica** — `semantica/metric_views.sql` (+ `reaplicar_tags_mv.sql`), `python3 semantica/build_dashboard.py`, `python3 semantica/build_genie.py` (o importa los JSON de `workspace_export/`).
+9. **Capa semántica** — `semantica/metric_views.sql` (+ `reaplicar_tags_mv.sql`), `python3 semantica/build_dashboard.py`, `python3 semantica/build_genie.py`. La versión final del dashboard (con filtros globales) es `workspace_export/dashboard.lvdash.json` — impórtala; `build_dashboard.py` genera la versión base sin filtros.
 10. **Agente** — `agente/01_funciones_agente.sql`; despliega `agente/app/` como Databricks App (recursos: SQL warehouse + Lakebase; scope de usuario `sql`); otorga al service principal EXECUTE sobre el model service y CAN_EDIT sobre el experimento. Evaluación: `agente/eval/`. Variante Agent Bricks: `agente/agentbricks/README.md`.
 11. **Lakebase** — sigue `lakebase/README.md`: proyecto + base `siu`, `01_serving_bandeja.sql`, synced table, `02_ddl_operativo.sql`, `03_vistas_permisos.sql`, `04_sembrar_historial.py`, CDF config y `05_vistas_expediente_uc.sql`.
 
