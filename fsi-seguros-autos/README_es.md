@@ -9,9 +9,7 @@ agentes consumen los mismos números con el gobierno viajando con el dato a cada
 > Los identificadores del workspace se reemplazaron por placeholders (`<WAREHOUSE_ID>`, `<tu_usuario>`, …).
 > English version: [README_en.md](README_en.md)
 
-Diagramas de arquitectura: [`diagrama/arquitectura.drawio`](diagrama/arquitectura.drawio) (draw.io) y
-[`diagrama/lucid_arquitectura_es.json`](diagrama/lucid_arquitectura_es.json) / [`_en.json`](diagrama/lucid_arquitectura_en.json)
-(Lucid Standard Import; se regeneran con `build_lucid.py` / `build_lucid_en.py`).
+![Arquitectura](diagrama/arquitectura.png)
 
 ---
 
@@ -30,7 +28,7 @@ Diagramas de arquitectura: [`diagrama/arquitectura.drawio`](diagrama/arquitectur
 | **Evaluación y monitoreo del agente** | `mlflow.genai.evaluate` con jueces LLM personalizados (`make_judge`), scorers de código, monitoreo en producción | `agente/eval/` |
 | **Agent Bricks** | El mismo agente en Agent Runtime (Session Store, aprobación como 2ª invocación) | `agente/agentbricks/` |
 | **Lakebase** | Postgres administrado: **synced table** (reverse ETL) de la bandeja, **expediente** del investigador (casos, notas, bitácora) con **RLS**, **memoria del agente** (checkpointer LangGraph) y **CDF Lakebase → Delta** para cerrar el ciclo (veredictos → reentrenamiento) | `lakebase/`, `agente/app/lakebase.py`, `workspace_export/lakebase_*.json` |
-| **Diagramas** | draw.io y Lucid (Standard Import JSON, íconos oficiales de Databricks), ES y EN | `diagrama/` |
+| **Diagrama** | Arquitectura de referencia (PNG) | `diagrama/arquitectura.png` |
 
 ## Arquitectura (resumen)
 
