@@ -80,6 +80,10 @@ Representative prompts (translated from Spanish):
 
 Patterns that worked: **plan → build → verify against the live system** (never trust generated code until it ran); **ask before outward-facing actions** (publishing, sharing, merging); **keep memory notes of gotchas** (e.g. CDF needs `REPLICA IDENTITY FULL`); **let the agent propose, the human decide** — the same principle the SIU agent applies.
 
+## Execution evidence
+
+The build ran end to end, and the **output is committed as text** in [`evidence/`](evidence/README.md): executed notebooks with their cell outputs (`.ipynb` + `.md`), job-run logs of the agent, pipeline event-log results, the same governed query run as three roles, Lakebase RLS tests and CDF status, MLflow registry/evaluation/traces, Genie answers with their SQL and results, executed dashboard datasets, and app/deployment status. The index maps every stage to its files.
+
 ## Demo script
 
 Tell → show → tell walkthrough (~15 min) with objection handling for a business and a technical stakeholder: [`docs/DEMO_ROLEPLAY.md`](docs/DEMO_ROLEPLAY.md).

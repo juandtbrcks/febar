@@ -80,6 +80,10 @@ Prompts representativos:
 
 Patrones que funcionaron: **planear → construir → verificar contra el sistema real** (no confiar en código generado hasta que corre); **preguntar antes de acciones hacia afuera** (publicar, compartir, hacer merge); **guardar notas de los gotchas** (p. ej. el CDF necesita `REPLICA IDENTITY FULL`); **el agente propone, el humano decide**, el mismo principio que aplica el agente SIU.
 
+## Evidencia de ejecución
+
+El build corrió de punta a punta y la **salida está en el repo como texto** en [`evidence/`](evidence/README.md): notebooks ejecutados con sus outputs (`.ipynb` + `.md`), logs de las corridas del agente, resultados del event log del pipeline, la misma consulta gobernada con tres roles, pruebas de RLS y estado del CDF en Lakebase, registro/evaluación/traces de MLflow, respuestas de Genie con su SQL y resultados, datasets del dashboard ejecutados y estado de la app y sus despliegues. El índice relaciona cada etapa con sus archivos.
+
 ## Guion del demo
 
 Recorrido tell → show → tell (~15 min) con manejo de objeciones para un stakeholder de negocio y uno técnico: [`docs/DEMO_ROLEPLAY.md`](docs/DEMO_ROLEPLAY.md) (en inglés).

@@ -1,0 +1,32 @@
+# Agent quick test after the model-service routing fix
+# Databricks job run 687004212953197 (task run 47417732149611) · state=SUCCESS · task={"python_file": "/Workspace/Users/<tu_usuario>/seguros_demo/agente/prueba/prueba_rapida.py"}
+# stdout captured with `databricks jobs get-run-output` (truncated=False)
+
+Expected `str` but got `list` - serialized value may not be as expected
+
+
+HERRAMIENTAS: ['detalle_siniestro', 'evidencia_documental', 'historial_cliente', 'perfil_taller']
+RESPUESTA: ### **DICTAMEN PRELIMINAR DE INVESTIGACIÓN SIU**
+**Siniestro:** `S202600000146`  
+**Vehículo:** Volkswagen Vento 2014  
+**Asegurado:** Alberto Ramírez Navarro (RFC: `RANA8912267R1`)  
+**Taller:** Carrocerías Jiménez Express (Puebla)
+
+---
+
+### **1. Resumen**
+Siniestro reportado por causa de **inundación** en el estado de Puebla con un monto reclamado de **$120,452.79 MXN** (74.45% del valor comercial del vehículo). El modelo de detección asigna una **probabilidad de fraude de 94.63% (Nivel Alto)**. Se detectaron discrepancias documentales críticas en el presupuesto del taller (inconsistencia en VIN y montos no coincidentes) junto con la presencia de un tercero recurrente y sin intervención de autoridades.
+
+---
+
+### **2. Señales de Alerta (Riesgos Clave)**
+* **Probabilidad de fraude muy alta:** **94.63%** según el modelo SIU.
+* **Inconsistencias documentales graves:**
+  * **VIN no coincide:** El VIN registrado en el presupuesto físico no corresponde al vehículo asegurado.
+  * **Discrepancia en importes:** El documento del taller marca un total de **$180,374.33 MXN** vs **$125,065.76 MXN** capturados en sistema (diferencia de **+44.2%**).
+* **Terceros recurrentes:** Involucra a 2 terc
+PENDIENTE DE APROBACIÓN: {"tipo": "aprobacion_caso", "propuesta": {"prioridad": "Alta", "recomendacion": "Realizar inspección física para cotejo de VIN en chasis, auditar presupuesto del taller por discrepancia de +44.2%, investigar posible colusión con tercero recurrente y validar registro meteorológico oficial del evento de inundación.", "num_siniestro": "S202600000146", "monto_en_riesgo": 180374.33, "resumen": "Siniest
+PRUEBA OK (no se aprobó: nada se escribió)
+
+
+Trace(trace_id='tr-4ee8f9dfc7033458dea7da625b0c38df')
