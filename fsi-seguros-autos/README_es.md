@@ -35,7 +35,7 @@ agentes consumen los mismos números con el gobierno viajando con el dato a cada
 4. ML / GENAI   feature table → XGBoost (MLflow, champion/challenger) → scoring de siniestros abiertos; ai_parse_document + ai_query sobre PDFs; agente SIU en LangGraph sobre funciones UC
 5. LAKEBASE     scoring → bandeja_siu_serving (Delta, CDF) → synced table → bandeja SIU en ms; expediente + notas + memoria del agente en Postgres (RLS)
 6. GENIE        Genie space sobre 4 metric views + veredictos SIU: "siniestralidad por paquete", "¿qué tanto confirma el SIU lo que marca el modelo?"
-7. APP          Databricks App (Streamlit): bandeja, expediente, chat con el agente con aprobación humana
+7. APP          Databricks App (Streamlit): bandeja, expediente, chat con el agente con aprobación humana y pestaña **Pregunta a Genie** (Genie Conversation API, con la identidad del usuario)
 8. CICLO        veredictos SIU → CDF de Lakebase → Delta (seguros_siu_expediente) → etiquetas para el siguiente entrenamiento (89 en la última corrida)
 ```
 

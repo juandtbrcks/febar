@@ -35,7 +35,7 @@ governance travelling with the data to every user.
 4. ML / GENAI feature table → XGBoost (MLflow, champion/challenger) → scoring of open claims; ai_parse_document + ai_query on PDFs; LangGraph SIU agent on UC functions
 5. LAKEBASE   scoring → bandeja_siu_serving (Delta, CDF) → synced table → SIU queue in ms; case file + notes + agent memory in Postgres (RLS)
 6. GENIE      Genie space on 4 metric views + SIU verdicts: "loss ratio by package", "how often does the SIU confirm what the model flags?"
-7. APP        Databricks App (Streamlit): queue, case file, agent chat with human approval
+7. APP        Databricks App (Streamlit): queue, case file, agent chat with human approval, and an **Ask Genie** tab (Genie Conversation API, on-behalf-of the user)
 8. LOOP       SIU verdicts → Lakebase CDF → Delta (seguros_siu_expediente) → labels for the next training run (89 in the last run)
 ```
 

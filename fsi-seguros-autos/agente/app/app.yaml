@@ -6,3 +6,5 @@ env:
     value: /Users/<tu_usuario>/seguros_agente_siu
   - name: LAKEBASE_ENDPOINT
     value: projects/seguros-siu/branches/production/endpoints/primary
+  - name: GENIE_SPACE_ID
+    value: <ID>
