@@ -9,9 +9,7 @@ governance travelling with the data to every user.
 > Workspace identifiers were replaced with placeholders (`<WAREHOUSE_ID>`, `<tu_usuario>`, …).
 > Code comments, prompts and object names are in Spanish (the demo was delivered in Spanish). Versión en español: [README_es.md](README_es.md)
 
-Architecture diagrams: [`diagrama/arquitectura.drawio`](diagrama/arquitectura.drawio) (draw.io) and
-[`diagrama/lucid_arquitectura_en.json`](diagrama/lucid_arquitectura_en.json) / [`_es.json`](diagrama/lucid_arquitectura_es.json)
-(Lucid Standard Import; regenerate with `build_lucid_en.py` / `build_lucid.py`).
+![Architecture](diagrama/arquitectura.png)
 
 ---
 
@@ -30,7 +28,7 @@ Architecture diagrams: [`diagrama/arquitectura.drawio`](diagrama/arquitectura.dr
 | **Agent evaluation & monitoring** | `mlflow.genai.evaluate` with custom LLM judges (`make_judge`), code scorers, production monitoring | `agente/eval/` |
 | **Agent Bricks** | Same agent on Agent Runtime (Session Store; approval as a second invocation) | `agente/agentbricks/` |
 | **Lakebase** | Managed Postgres: **synced table** (reverse ETL) for the work queue, investigator **case file** (cases, notes, audit log) with **RLS**, **agent memory** (LangGraph checkpointer) and **Lakebase → Delta CDF** to close the loop (verdicts → retraining) | `lakebase/`, `agente/app/lakebase.py`, `workspace_export/lakebase_*.json` |
-| **Diagrams** | draw.io and Lucid (Standard Import JSON, official Databricks icons), ES and EN | `diagrama/` |
+| **Diagram** | Reference architecture (PNG) | `diagrama/arquitectura.png` |
 
 ## Architecture (summary)
 
