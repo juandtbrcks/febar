@@ -15,9 +15,11 @@ from databricks.sdk.core import Config
 
 from agente_siu import AgenteSIU, texto
 from lakebase import ESTATUS, Contexto, Lakebase, SinPermiso
+from genie_uc import preguntar as genie_preguntar
 from sql_uc import crear_sql
 
 WAREHOUSE_ID = os.environ["WAREHOUSE_ID"]
+GENIE_SPACE_ID = os.environ.get("GENIE_SPACE_ID", "")
 EXPERIMENTO = os.environ.get("MLFLOW_EXPERIMENT", "/Users/<tu_usuario>/seguros_agente_siu")
 NOMBRES = {"bandeja_siu": "Bandeja SIU", "detalle_siniestro": "Detalle del siniestro", "evidencia_documental": "Evidencia documental (IA)",
            "historial_cliente": "Historial del asegurado", "perfil_taller": "Perfil del taller", "expediente_siu": "Expediente SIU (Lakebase)",
@@ -161,7 +163,7 @@ izq, der = st.columns([1.15, 1.35], gap="large")
 
 # ---------------- bandeja / casos / ciclo ----------------
 with izq:
-    t1, t2, t3 = st.tabs(["📥 Bandeja SIU", "📁 Casos", "🔁 Ciclo SIU → modelo"])
+    t1, t2, t3, t4 = st.tabs(["📥 Bandeja SIU", "📁 Casos", "🔁 Ciclo SIU → modelo", "💬 Pregunta a Genie"])
     with t1:
         try:
             filas, ms = lb.bandeja(ctx)
@@ -250,6 +252,51 @@ with izq:
                 "5. Los veredictos del SIU entran como **etiquetas** al reentrenamiento del modelo (job MLOps) y a Genie.")
         except Exception as e:
             st.error(f"No se pudieron leer las métricas: {e}")
+
+    with t4:
+        st.caption("Genie responde en lenguaje natural sobre las metric views certificadas y los veredictos del SIU. "
+                   "Corre con **tu** identidad: ves solo tu región y la PII según tu rol.")
+        ejemplos = ["¿Qué tanto confirma el SIU los siniestros que el modelo marca como riesgo alto?",
+                    "¿Cuál es la siniestralidad por paquete?",
+                    "¿En qué tipos de taller se concentra el fraude?"]
+        e1, e2, e3 = st.columns(3)
+        elegido = None
+        for col, q in zip((e1, e2, e3), ejemplos):
+            if col.button(q, key=f"gq-{q}", use_container_width=True):
+                elegido = q
+        with st.form("genie-form", clear_on_submit=True):
+            libre = st.text_input("Tu pregunta", placeholder="Ej. ¿Cuántos casos SIU hay abiertos por región?")
+            enviar = st.form_submit_button("Preguntar a Genie")
+        pregunta_g = elegido or (libre.strip() if enviar and libre.strip() else None)
+        if pregunta_g:
+            if not GENIE_SPACE_ID:
+                st.error("Falta GENIE_SPACE_ID en app.yaml.")
+            else:
+                with st.spinner("Genie está pensando…"):
+                    try:
+                        st.session_state.genie = genie_preguntar(user_ws, GENIE_SPACE_ID, pregunta_g,
+                                                                 st.session_state.get("genie_conv"))
+                        st.session_state.genie_conv = st.session_state.genie["conversation_id"]
+                        st.session_state.genie_q = pregunta_g
+                    except Exception as e:
+                        st.session_state.genie = {"error": str(e)[:400], "texto": [], "df": None, "sql": None, "sugerencias": []}
+        g = st.session_state.get("genie")
+        if g:
+            st.markdown(f"**Pregunta:** {st.session_state.get('genie_q', '')}")
+            for t in g.get("texto", []):
+                st.markdown(t)
+            if g.get("df") is not None and not g["df"].empty:
+                st.dataframe(g["df"], hide_index=True, use_container_width=True, height=260)
+            if g.get("sql"):
+                with st.expander("SQL que generó Genie"):
+                    st.code(g["sql"], language="sql")
+            if g.get("error"):
+                st.warning(g["error"])
+            if g.get("sugerencias"):
+                st.caption("Siguientes preguntas sugeridas: " + " · ".join(g["sugerencias"]))
+            if st.button("Nueva conversación con Genie"):
+                st.session_state.genie = st.session_state.genie_conv = None
+                st.rerun()
 
 # ---------------- chat ----------------
 with der:
