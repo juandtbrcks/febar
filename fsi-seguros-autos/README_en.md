@@ -23,7 +23,7 @@ governance travelling with the data to every user.
 | **"No extracts" governance** | Governed tags (PII, region, certification), **ABAC** policies (masking + row filters), data-science sandbox, audit and lineage | `gobierno/01..05_*.sql`, `gobierno/README.md` |
 | **AI on documents** | `ai_parse_document` + `ai_query` (Claude) with JSON-schema `responseFormat` → repair-estimate validation | `documentos/01_extraccion_presupuestos.sql` |
 | **Fraud ML** | Feature Engineering in UC, MLflow (nested runs, `mlflow.evaluate`, SHAP), UC Model Registry with **champion/challenger** aliases and a quality gate, batch scoring | `ml/01_features_entrenamiento.py`, `ml/02_scoring_batch.py`, `workspace_export/job_mlops.json` |
-| **Semantic layer & BI** | 4 **metric views** (YAML v1.1), 4-page **AI/BI Dashboard**, **Genie space** | `semantica/`, `workspace_export/dashboard.lvdash.json`, `workspace_export/genie_space.json` |
+| **Semantic layer & BI** | 4 **metric views** (YAML v1.1), 4-page **AI/BI Dashboard** with global filters (year, region, channel), **Genie space** | `semantica/`, `workspace_export/dashboard.lvdash.json`, `workspace_export/genie_space.json` |
 | **SIU fraud-investigator agent** | Databricks App (Streamlit + **LangGraph**); tools are UC functions executed **on behalf of the user** (ABAC applies); LLM through a **UC model service / AI Gateway**; human-in-the-loop; MLflow Tracing | `agente/01_funciones_agente.sql`, `agente/app/`, `workspace_export/app_config.json` |
 | **Agent evaluation & monitoring** | `mlflow.genai.evaluate` with custom LLM judges (`make_judge`), code scorers, production monitoring | `agente/eval/` |
 | **Agent Bricks** | Same agent on Agent Runtime (Session Store; approval as a second invocation) | `agente/agentbricks/` |
@@ -77,7 +77,7 @@ Unity Catalog governs everything: tags, ABAC, lineage, audit, Discover.
 6. **Governance** — `gobierno/01_roles_funciones.sql` → `02_tags_politicas.sql` → (`04_permisos.sql` is a template) → `03_demo_personas.sql` to switch roles live. See `gobierno/README.md`.
 7. **AI on documents** — `documentos/01_extraccion_presupuestos.sql`.
 8. **ML** — import `ml/*.py` as notebooks and create the job from `workspace_export/job_mlops.json` (single-user ML cluster).
-9. **Semantic layer** — `semantica/metric_views.sql` (+ `reaplicar_tags_mv.sql`), `python3 semantica/build_dashboard.py`, `python3 semantica/build_genie.py` (or import the JSON files in `workspace_export/`).
+9. **Semantic layer** — `semantica/metric_views.sql` (+ `reaplicar_tags_mv.sql`), `python3 semantica/build_dashboard.py`, `python3 semantica/build_genie.py`. The final dashboard (with global filters) is `workspace_export/dashboard.lvdash.json` — import it; `build_dashboard.py` builds the base version without filters.
 10. **Agent** — `agente/01_funciones_agente.sql`; deploy `agente/app/` as a Databricks App (resources: SQL warehouse + Lakebase; user scope `sql`); grant the app service principal EXECUTE on the model service and CAN_EDIT on the experiment. Evaluation: `agente/eval/`. Agent Bricks variant: `agente/agentbricks/README.md`.
 11. **Lakebase** — follow `lakebase/README.md`: project + `siu` database, `01_serving_bandeja.sql`, synced table, `02_ddl_operativo.sql`, `03_vistas_permisos.sql`, `04_sembrar_historial.py`, CDF config and `05_vistas_expediente_uc.sql`.
 
