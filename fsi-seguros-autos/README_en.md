@@ -9,7 +9,80 @@ governance travelling with the data to every user.
 > Workspace identifiers were replaced with placeholders (`<WAREHOUSE_ID>`, `<tu_usuario>`, …).
 > Code comments, prompts and object names are in Spanish (the demo was delivered in Spanish). Versión en español: [README_es.md](README_es.md)
 
+
+## Business outcome (read this first)
+
+**Problem.** An auto insurer has the data to fight claims fraud and manage reserves, but it is spread across 6–7 systems (a 2011 Oracle DWH with ~55,000 columns, a loans database in AWS, a separate data-science lake). Every area computes its own loss ratio, PII leaves in data extracts, actuarial runs take ~10 hours, and about 1 in 4 fraudulent claims is still paid.
+
+**Outcome.** One governed source of truth that the business, actuaries, the fraud model and an SIU investigator agent all use, with the investigator's verdict flowing back to improve the model.
+
+| Lever | Buyer KPI | Conservative estimate (year one) |
+|---|---|---|
+| Fraud model + SIU agent | Loss ratio | **−0.5 to −1.0 pt** ≈ MXN 10–20M / yr on a ~MXN 2.0B auto book |
+| Chain-ladder on governed data | Reserve capital | **~MXN 15M** (one third of MXN 45M of case-reserve redundancy) |
+| Certified metric views | Actuarial close | **~10 h → under 1 h** per run (~130 analyst-hours / month) |
+| Ranked queue + agent-built case file | SIU productivity | **~80% of fraud in the top 10% of claims**, +30% cases per investigator |
+| ABAC instead of copies | Governance | **−50% PII extracts** in year one, 100% of access audited |
+
+**Total: MXN 25–35M of first-year value** on the auto book alone. Figures come from the working demo on synthetic data calibrated to the Mexican auto market and are meant to be re-validated in a 90-day pilot.
+
+## The data journey (integrated, end to end)
+
+```
+1. RAW        generate_data.py → PostgreSQL ("Oracle on-prem" DWH + "AWS" loans DB), app JSON, body-shop PDFs
+2. LAKEFLOW   Lakeflow Declarative Pipeline seguros_medallion: federation + Auto Loader → bronze → silver (expectations, quarantine) → gold star schema + actuarial
+3. UNITY CAT. governed tags + ABAC (PII masking, region row filters) on gold; lineage, audit, Discover domain
+4. ML / GENAI feature table → XGBoost (MLflow, champion/challenger) → scoring of open claims; ai_parse_document + ai_query on PDFs; LangGraph SIU agent on UC functions
+5. LAKEBASE   scoring → bandeja_siu_serving (Delta, CDF) → synced table → SIU queue in ms; case file + notes + agent memory in Postgres (RLS)
+6. GENIE      Genie space on 4 metric views + SIU verdicts: "loss ratio by package", "how often does the SIU confirm what the model flags?"
+7. APP        Databricks App (Streamlit): queue, case file, agent chat with human approval
+8. LOOP       SIU verdicts → Lakebase CDF → Delta (seguros_siu_expediente) → labels for the next training run (89 in the last run)
+```
+
 ![Architecture](diagrama/arquitectura.png)
+
+Every stage reads the output of the previous one; nothing is exported by hand between them.
+
+## Decisions and trade-offs
+
+| Decision | Why | Trade-off / what we would do in production |
+|---|---|---|
+| **Federation first, not a migration** | Value in weeks while Oracle and AWS keep running; one query across systems | Federated reads depend on source performance; bronze materializes what we use, and hot tables can move to managed ingestion later |
+| **ABAC policies on the gold layer only** | One policy per tag applies to every consumer (BI, Genie, ML, agent); pipelines that run as owner aren't affected | Bronze/silver are protected by grants instead; policies need governed tags kept current on every new table |
+| **Serving table without PII + synced table** | Data minimization in the operational layer; incremental sync via Delta CDF; millisecond reads | One more table to maintain; refreshed with `MERGE` (not `CREATE OR REPLACE`) to keep CDF |
+| **Role and region from UC, enforced by Postgres RLS** | The app connects as its service principal, but each transaction carries the user's UC role/region | RLS trusts the app to set the context; the table owner bypasses RLS (tested with an unprivileged role) |
+| **Agent tools as UC functions called on-behalf-of the user** | The agent can never see more than the user; governance comes for free | Tools are SQL-shaped; complex logic lives in the functions |
+| **LLM through a UC model service (AI Gateway)** | Swap models by routing, not code; inference table for audit | Message history isn't portable across model families (learned the hard way: tool-call formats differ) |
+| **Human approval for every case** | Investigators stay accountable; regulators see a human decision | Slower than auto-opening; mitigated by the agent drafting the case |
+| **SIU verdicts used for training only, not for testing** | Verdicts on model-ranked claims are biased toward the model; keeping test on the historical hold-out keeps the champion/challenger gate fair | Fewer new labels reach evaluation until enough accumulate |
+| **Lakebase CDF (Beta) to close the loop** | No ETL code from Postgres back to Delta | Beta feature; fallback is a scheduled snapshot through the Lakebase UC catalog |
+| **Synthetic data** | No customer data needed; fraud patterns are planted, so the model has signal to find | Metrics are optimistic versus real data (we say so and keep business estimates conservative) |
+| **Streamlit app + Agent Bricks variant** | Streamlit for the full SIU workflow UI; Agent Bricks to show the managed runtime | Two surfaces to maintain; Agent Bricks needs approval as a second invocation (no `interrupt()` with user identity) |
+
+## AI as a force multiplier
+
+This prototype was built with an AI coding agent (Claude Code, driven by Databricks' internal FE toolkit) as a teammate, plus Databricks' own AI features.
+
+| Tool | What it did |
+|---|---|
+| **Claude Code** (CLI agent) | Wrote and ran the generator, pipelines, governance SQL, ML notebooks, app and agent; deployed with the Databricks CLI; validated every step against the live workspace |
+| **FE skills / plugins** | `databricks-lakebase` (projects, synced tables, roles), `html-slides` (Databricks-branded deck), Genie space builder, Lucid MCP (architecture diagram with official icons) |
+| **Genie Code** | Added global filters (year, region, channel) to the AI/BI dashboard |
+| **Databricks AI functions** | `ai_parse_document` + `ai_query` (Claude) to read and validate 240 body-shop PDFs |
+| **MLflow GenAI** | LLM judges (`make_judge`) to evaluate the SIU agent; production monitoring of app traces |
+
+Representative prompts (translated from Spanish):
+
+- *"Add Lakebase to the SIU app: a synced table for the queue, a place for investigators to add notes, and persistent agent memory."* → produced the 4-part design (serving table + RLS case file + LangGraph checkpointer + CDF loop).
+- *"Verify the RLS as a non-owner role, not as owner."* → caught that the table owner bypasses RLS and switched tests to `SET LOCAL ROLE`.
+- *"Use conservative numbers that still show significant impact."* → business case ranges with explicit assumptions.
+- *"Sanitize everything for a public repo: no client name, no workspace IDs."* → a reusable sanitizer and a scan before every commit.
+
+Patterns that worked: **plan → build → verify against the live system** (never trust generated code until it ran); **ask before outward-facing actions** (publishing, sharing, merging); **keep memory notes of gotchas** (e.g. CDF needs `REPLICA IDENTITY FULL`); **let the agent propose, the human decide** — the same principle the SIU agent applies.
+
+## Demo script
+
+Tell → show → tell walkthrough (~15 min) with objection handling for a business and a technical stakeholder: [`docs/DEMO_ROLEPLAY.md`](docs/DEMO_ROLEPLAY.md).
 
 ---
 
