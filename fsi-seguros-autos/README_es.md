@@ -9,7 +9,80 @@ agentes consumen los mismos números con el gobierno viajando con el dato a cada
 > Los identificadores del workspace se reemplazaron por placeholders (`<WAREHOUSE_ID>`, `<tu_usuario>`, …).
 > English version: [README_en.md](README_en.md)
 
+
+## Resultado de negocio (léelo primero)
+
+**Problema.** Una aseguradora de autos tiene los datos para combatir el fraude en siniestros y gestionar reservas, pero están repartidos en 6–7 sistemas (un DWH Oracle de 2011 con ~55,000 columnas, una BD de créditos en AWS, un data lake aparte para ciencia de datos). Cada área calcula su propia siniestralidad, la PII sale en extractos, los procesos actuariales tardan ~10 horas y cerca de 1 de cada 4 siniestros fraudulentos se sigue pagando.
+
+**Resultado.** Una sola fuente de verdad gobernada que usan el negocio, la actuaría, el modelo de fraude y un agente investigador del SIU, y el veredicto del investigador regresa para mejorar el modelo.
+
+| Palanca | KPI del comprador | Estimación conservadora (año 1) |
+|---|---|---|
+| Modelo de fraude + agente SIU | Siniestralidad | **−0.5 a −1.0 pt** ≈ MXN 10–20M / año sobre ~MXN 2.0B de prima de autos |
+| Chain-ladder sobre datos gobernados | Capital en reservas | **~MXN 15M** (un tercio de MXN 45M de redundancia en reservas de caso) |
+| Metric views certificadas | Cierre actuarial | **~10 h → menos de 1 h** por corrida (~130 horas-analista / mes) |
+| Bandeja priorizada + expediente armado por el agente | Productividad SIU | **~80% del fraude en el 10% superior de siniestros**, +30% casos por investigador |
+| ABAC en lugar de copias | Gobierno | **−50% de extractos con PII** en el año 1, 100% de accesos auditados |
+
+**Total: MXN 25–35M de valor en el primer año** solo en autos. Las cifras salen del demo funcional con datos sintéticos calibrados al mercado mexicano de autos y se deben revalidar en un piloto de 90 días.
+
+## El recorrido de los datos (integrado, de punta a punta)
+
+```
+1. DATOS CRUDOS generate_data.py → PostgreSQL (DWH "Oracle on-prem" + BD de créditos "AWS"), JSON de la app, PDFs de talleres
+2. LAKEFLOW     Lakeflow Declarative Pipeline seguros_medallion: federación + Auto Loader → bronce → plata (expectations, cuarentena) → oro estrella + actuarial
+3. UNITY CAT.   governed tags + ABAC (masking de PII, filtro por región) en oro; linaje, auditoría, dominio en Discover
+4. ML / GENAI   feature table → XGBoost (MLflow, champion/challenger) → scoring de siniestros abiertos; ai_parse_document + ai_query sobre PDFs; agente SIU en LangGraph sobre funciones UC
+5. LAKEBASE     scoring → bandeja_siu_serving (Delta, CDF) → synced table → bandeja SIU en ms; expediente + notas + memoria del agente en Postgres (RLS)
+6. GENIE        Genie space sobre 4 metric views + veredictos SIU: "siniestralidad por paquete", "¿qué tanto confirma el SIU lo que marca el modelo?"
+7. APP          Databricks App (Streamlit): bandeja, expediente, chat con el agente con aprobación humana
+8. CICLO        veredictos SIU → CDF de Lakebase → Delta (seguros_siu_expediente) → etiquetas para el siguiente entrenamiento (89 en la última corrida)
+```
+
 ![Arquitectura](diagrama/arquitectura.png)
+
+Cada etapa lee la salida de la anterior; no hay exportaciones manuales entre ellas.
+
+## Decisiones y trade-offs
+
+| Decisión | Por qué | Trade-off / qué haríamos en producción |
+|---|---|---|
+| **Primero federación, no migración** | Valor en semanas mientras Oracle y AWS siguen operando; una consulta entre sistemas | Las lecturas federadas dependen del desempeño de la fuente; bronce materializa lo que se usa y las tablas calientes pueden pasar a ingesta administrada después |
+| **Políticas ABAC solo en la capa oro** | Una política por tag aplica a todos los consumidores (BI, Genie, ML, agente); los pipelines que corren como owner no se ven afectados | Bronce/plata se protegen con permisos; cada tabla nueva necesita sus governed tags al día |
+| **Tabla de serving sin PII + synced table** | Minimización de datos en la capa operativa; sync incremental vía CDF de Delta; lecturas en milisegundos | Una tabla más que mantener; se refresca con `MERGE` (no `CREATE OR REPLACE`) para conservar el CDF |
+| **Rol y región desde UC, aplicados por RLS en Postgres** | La app se conecta como su service principal, pero cada transacción lleva el rol/región del usuario en UC | El RLS confía en que la app fije el contexto; el owner de las tablas se salta el RLS (probado con un rol sin privilegios) |
+| **Herramientas del agente como funciones UC con la identidad del usuario** | El agente nunca ve más que el usuario; el gobierno viene incluido | Las herramientas son SQL; la lógica compleja vive en las funciones |
+| **LLM vía model service de UC (AI Gateway)** | Cambiar de modelo es un cambio de ruteo, no de código; inference table para auditoría | El historial de mensajes no es portable entre familias de modelos (los formatos de tool calls difieren) |
+| **Aprobación humana de cada caso** | El investigador sigue siendo responsable; el regulador ve una decisión humana | Más lento que abrir casos automáticamente; se compensa con el borrador que arma el agente |
+| **Veredictos SIU solo para entrenar, no para evaluar** | Los veredictos sobre siniestros que el modelo priorizó están sesgados hacia el modelo; mantener el test en el hold-out histórico deja justa la compuerta champion/challenger | Menos etiquetas nuevas llegan a la evaluación hasta que se acumulen |
+| **CDF de Lakebase (Beta) para cerrar el ciclo** | Sin código ETL de Postgres de regreso a Delta | Función en Beta; el respaldo es un snapshot programado vía el catálogo UC de Lakebase |
+| **Datos sintéticos** | No se necesitan datos del cliente; los patrones de fraude están sembrados, así que el modelo tiene señal | Las métricas son optimistas frente a datos reales (lo decimos y mantenemos conservadoras las estimaciones de negocio) |
+| **App Streamlit + variante Agent Bricks** | Streamlit para todo el flujo del SIU; Agent Bricks para mostrar el runtime administrado | Dos superficies que mantener; Agent Bricks requiere la aprobación como segunda invocación (sin `interrupt()` con identidad de usuario) |
+
+## La IA como multiplicador
+
+Este prototipo se construyó con un agente de código con IA (Claude Code, con el toolkit interno de Field Engineering de Databricks) como compañero de equipo, además de las funciones de IA de Databricks.
+
+| Herramienta | Qué hizo |
+|---|---|
+| **Claude Code** (agente CLI) | Escribió y ejecutó el generador, los pipelines, el SQL de gobierno, los notebooks de ML, la app y el agente; desplegó con el Databricks CLI; validó cada paso contra el workspace real |
+| **Skills / plugins de FE** | `databricks-lakebase` (proyectos, synced tables, roles), `html-slides` (deck con marca Databricks), builder de Genie spaces, MCP de Lucid (diagrama con íconos oficiales) |
+| **Genie Code** | Agregó filtros globales (año, región, canal) al dashboard AI/BI |
+| **Funciones de IA de Databricks** | `ai_parse_document` + `ai_query` (Claude) para leer y validar 240 PDFs de talleres |
+| **MLflow GenAI** | Jueces LLM (`make_judge`) para evaluar al agente SIU; monitoreo en producción de los traces de la app |
+
+Prompts representativos:
+
+- *"Agrega Lakebase a la app del SIU: una synced table para la bandeja, que los investigadores puedan agregar notas y memoria persistente del agente."* → produjo el diseño de 4 piezas (tabla de serving + expediente con RLS + checkpointer de LangGraph + ciclo con CDF).
+- *"Verifica el RLS con un rol que no sea owner."* → detectó que el owner se salta el RLS y cambió las pruebas a `SET LOCAL ROLE`.
+- *"Usa números conservadores pero que sigan mostrando un impacto importante."* → rangos del business case con supuestos explícitos.
+- *"Sanitiza todo para un repo público: sin nombre del cliente ni IDs del workspace."* → un sanitizador reutilizable y un escaneo antes de cada commit.
+
+Patrones que funcionaron: **planear → construir → verificar contra el sistema real** (no confiar en código generado hasta que corre); **preguntar antes de acciones hacia afuera** (publicar, compartir, hacer merge); **guardar notas de los gotchas** (p. ej. el CDF necesita `REPLICA IDENTITY FULL`); **el agente propone, el humano decide**, el mismo principio que aplica el agente SIU.
+
+## Guion del demo
+
+Recorrido tell → show → tell (~15 min) con manejo de objeciones para un stakeholder de negocio y uno técnico: [`docs/DEMO_ROLEPLAY.md`](docs/DEMO_ROLEPLAY.md) (en inglés).
 
 ---
 
