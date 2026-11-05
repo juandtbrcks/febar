@@ -1,0 +1,253 @@
+{
+  "title": "Aseguradora FSI · Autos — Genie Ejecutivo",
+  "description": "Pregunta en lenguaje natural por la cartera, rentabilidad, siniestros, fraude y canales comerciales y reservas actuariales de Seguros Autos FSI. Responde sobre la capa semántica gobernada (una sola fuente, sin extractos).",
+  "serialized_space": {
+    "version": 2,
+    "config": {
+      "sample_questions": [
+        {
+          "id": "2423d8013d0d422d977d5dc9ae0106df",
+          "question": [
+            "¿Qué siniestros abiertos de riesgo alto debe revisar el SIU primero y por qué?"
+          ]
+        },
+        {
+          "id": "3549885fed5f43218e091a475df0d8f7",
+          "question": [
+            "¿Qué tanto confirma el SIU los siniestros que el modelo marca como riesgo alto?"
+          ]
+        },
+        {
+          "id": "458b0dfa856244c4a85eb39ba56862cb",
+          "question": [
+            "¿Cuál es la siniestralidad por paquete y cuál es el más rentable?"
+          ]
+        },
+        {
+          "id": "58184c4a71b849349f28e4885aa8883f",
+          "question": [
+            "¿Nuestras reservas de siniestros son suficientes? ¿En qué cobertura sobra o falta?"
+          ]
+        },
+        {
+          "id": "622aa125df63470e8e1787a51fb90d4b",
+          "question": [
+            "¿Cómo ha evolucionado la prima emitida y la siniestralidad por año?"
+          ]
+        },
+        {
+          "id": "77c8cbf6cac44119b53d1e952e9a53d9",
+          "question": [
+            "¿Qué canal convierte mejor las cotizaciones y cuánta prima genera?"
+          ]
+        },
+        {
+          "id": "b947632239db4a448376b73453308140",
+          "question": [
+            "¿Qué siniestros abiertos tienen presupuestos de taller inconsistentes y por qué?"
+          ]
+        },
+        {
+          "id": "f182af33ed15430a8bfe3fe381159a14",
+          "question": [
+            "¿En qué coberturas y tipos de taller se concentra el fraude?"
+          ]
+        }
+      ]
+    },
+    "data_sources": {
+      "tables": [
+        {
+          "identifier": "demo_catalog.seguros_demo.act_siniestralidad_periodo"
+        },
+        {
+          "identifier": "demo_catalog.seguros_demo.docs_validacion_presupuestos"
+        },
+        {
+          "identifier": "demo_catalog.seguros_demo.mv_cartera_rentabilidad"
+        },
+        {
+          "identifier": "demo_catalog.seguros_demo.mv_comercial_canales"
+        },
+        {
+          "identifier": "demo_catalog.seguros_demo.mv_reservas_actuariales"
+        },
+        {
+          "identifier": "demo_catalog.seguros_demo.mv_siniestros_fraude"
+        },
+        {
+          "identifier": "demo_catalog.seguros_ml.scoring_fraude_siniestros"
+        },
+        {
+          "identifier": "demo_catalog.seguros_siu_expediente.casos"
+        },
+        {
+          "identifier": "demo_catalog.seguros_siu_expediente.etiquetas_siu"
+        }
+      ]
+    },
+    "instructions": {
+      "text_instructions": [
+        {
+          "id": "be562b9ad8504401821a8cd693f4481e",
+          "content": [
+            "CONTEXTO DE NEGOCIO\n",
+            "Aseguradora FSI — ramo AUTOS (México). Paquetes: Amplia, Limitada, RC (Responsabilidad Civil), Plataformas (vehículos de plataformas digitales), Flotilla (PyME) y Amplia Plus. Canales de venta: Agente, Banca Seguros, Tienda Aliada, Digital y Broker. Montos en pesos mexicanos (MXN). Fecha de corte de los datos: 13 de octubre de 2026.\n",
+            "\n",
+            "FUENTES (METRIC VIEWS — CAPA SEMÁNTICA) + 3 TABLAS\n",
+            "- demo_catalog.seguros_demo.mv_cartera_rentabilidad: una fila por póliza. Prima emitida/devengada/cobrada, pólizas, exposición y rentabilidad técnica (Siniestralidad %, Frecuencia, Severidad, Tasa de Cancelación) por año de suscripción, paquete, canal de venta, región, estado, segmento, vehículo y conductor.\n",
+            "- demo_catalog.seguros_demo.mv_siniestros_fraude: una fila por siniestro. Costo (Monto Reclamado, Costo Incurrido, Pagado, Reserva Pendiente, Recuperaciones), oportunidad de reporte y fraude (Tasa de Fraude, Monto Fraude Detectado, Siniestros Alto Riesgo, Monto en Riesgo de Fraude) por cobertura, canal de reporte, estatus, región, taller y tiempo.\n",
+            "- demo_catalog.seguros_demo.mv_comercial_canales: una fila por cotización. Cotizaciones, Tasa de Conversión, Prima Emitida (convertidas) y Brecha de Precio por canal (App Autos FSI, Portal Web, Comparador Externo, Agente, Módulo Tienda Aliada).\n",
+            "- demo_catalog.seguros_ml.scoring_fraude_siniestros (tabla normal, NO metric view): siniestros ABIERTOS calificados por el modelo de fraude, con prob_fraude, nivel_riesgo (Alto/Medio/Bajo), monto_en_riesgo y tres razones (razon_1..razon_3). Úsala para listar casos concretos (\"¿qué siniestros debe revisar el SIU?\").\n",
+            "- demo_catalog.seguros_demo.mv_reservas_actuariales: una fila por cobertura × periodo de ocurrencia, valuación al 30-sep-2026 (método chain-ladder sobre pagos). Medidas: Pagado, Reserva de Caso, Incurrido Reportado, Último Estimado, Reserva Requerida, IBNR, Suficiencia de Reserva, Suficiencia %, % Desarrollado, Siniestros Reportados. Dimensiones: Cobertura, Periodo de Ocurrencia (ej. 'oct-2025 a sep-2026'), Año Cierre Periodo, Edad (meses).\n",
+            "- demo_catalog.seguros_demo.act_siniestralidad_periodo (tabla normal): una fila por periodo de ocurrencia con prima_devengada, incurrido_reportado, ultimo_estimado, reserva_caso, reserva_requerida, suficiencia_reserva, siniestralidad_reportada y siniestralidad_ultima (fracciones 0–1). Úsala para \"siniestralidad última\" o \"a cuánto llegará la siniestralidad\".\n",
+            "- demo_catalog.seguros_demo.docs_validacion_presupuestos (tabla normal): un renglón por presupuesto de taller en PDF leído con IA (ai_parse_document + ai_query) y validado contra los sistemas. Columnas clave: num_siniestro, region, estatus, nombre_taller, total_documento, total_capturado, dif_total_pct, flags (total_no_coincide, vin_no_coincide, placas_no_coincide, fecha_previa_siniestro, taller_no_coincide, aritmetica_incorrecta), motivos (array de textos), num_inconsistencias, nivel_riesgo_modelo (Alto/Medio/Bajo/Cerrado), prob_fraude. Úsala para \"documentos inconsistentes\", \"presupuestos alterados\", \"VIN que no coincide\".\n",
+            "\n",
+            "- demo_catalog.seguros_siu_expediente.casos (vista normal): casos de investigación del SIU operados en la app (Lakebase seguros-siu, replicados a Delta por CDF casi en tiempo real). Columnas: id_caso, num_siniestro, region, prioridad, estatus ('Abierto','En investigación','Cerrado - Fraude confirmado','Cerrado - Procedente'), veredicto ('fraude'/'legitimo', solo cerrados), asignado_a, monto_en_riesgo, prob_fraude_apertura (score del modelo al abrir, 0–1), fecha_creacion, fecha_cierre.\n",
+            "- demo_catalog.seguros_siu_expediente.etiquetas_siu (vista normal): un renglón por caso CERRADO con veredicto del investigador, fraude (1/0), prob_fraude_apertura y nivel_riesgo_apertura. Úsala para \"¿qué tan bien acierta el modelo frente al SIU?\", \"tasa de confirmación\", \"monto evitado\". Estas etiquetas alimentan el reentrenamiento del modelo.\n",
+            "\n",
+            "REGLAS CRÍTICAS DE CONSULTA\n",
+            "1. En las METRIC VIEWS consulta SIEMPRE las medidas con MEASURE(`Nombre de la Medida`) y agrupa por dimensiones. NUNCA uses SUM()/AVG()/COUNT() directo sobre columnas de una metric view y NUNCA hagas JOIN entre metric views.\n",
+            "   Ejemplo: SELECT `Paquete`, MEASURE(`Prima Emitida`), MEASURE(`Siniestralidad %`) FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad GROUP BY 1.\n",
+            "2. Usa los nombres exactos de medidas y dimensiones (con acentos y espacios, entre backticks).\n",
+            "3. Suficiencia %, % Desarrollado, Siniestralidad %, Tasa de Fraude, Tasa de Cancelación, Tasa de Conversión, % Reportados por App y Brecha de Precio vienen como fracción 0–1: preséntalas como porcentaje.\n",
+            "4. \"Frecuencia\" = siniestros por año-vehículo expuesto (multiplica por 100 para \"por cada 100 autos\").\n",
+            "\n",
+            "DEFINICIONES DE NEGOCIO\n",
+            "- Siniestralidad = Costo Incurrido / Prima Devengada. Incurrido = pagado + reserva pendiente − recuperaciones. Los años de suscripción recientes (2025–2026) aún están en desarrollo: su siniestralidad es mayor porque incluye reservas abiertas.\n",
+            "- Prima devengada = parte de la prima ya \"ganada\" según el tiempo transcurrido de la vigencia.\n",
+            "- Fraude confirmado = dictamen del SIU (solo siniestros cerrados/rechazados). \"En proceso\" = sin dictamen todavía.\n",
+            "- Nivel Riesgo Fraude: Alto = top 10 % de riesgo según el modelo, Medio = top 25 %. Monto en Riesgo de Fraude = probabilidad × monto reclamado.\n",
+            "- RESERVAS (actuarial): periodos de ocurrencia de 12 meses que cierran el 30 de septiembre (el periodo 2026 = oct-2025 a sep-2026). Reserva de Caso = lo que los ajustadores tienen reservado en siniestros abiertos. Último Estimado = costo final proyectado con chain-ladder. Reserva Requerida = Último − Pagado. IBNR = Último − Incurrido (aquí sale NEGATIVO: las reservas de caso son conservadoras). Suficiencia de Reserva = Reserva de Caso − Reserva Requerida (>0 = reserva sobrada / capital inmovilizado). Cobertura de cola larga: Responsabilidad Civil y Gastos Médicos Ocupantes.\n",
+            "- Brecha de Precio No Convertidas = cuánto más caras fueron, en promedio, las cotizaciones que NO se convirtieron (sensibilidad a precio).\n",
+            "\n",
+            "ESTILO DE RESPUESTA\n",
+            "Responde en español, con el hallazgo clave primero; indica filtros aplicados; montos en MXN con separador de miles (usa millones cuando sean grandes)."
+          ]
+        }
+      ],
+      "example_question_sqls": [
+        {
+          "id": "2296432fba824eedb9e06e53bf0ad382",
+          "question": [
+            "Siniestros abiertos de alto riesgo para el SIU"
+          ],
+          "sql": [
+            "SELECT num_siniestro, cobertura, region, monto_reclamado, prob_fraude, razon_1, razon_2, razon_3 FROM demo_catalog.seguros_ml.scoring_fraude_siniestros WHERE nivel_riesgo = 'Alto' ORDER BY prob_fraude DESC, monto_reclamado DESC LIMIT 20"
+          ],
+          "usage_guidance": [
+            "Bandeja priorizada de casos a investigar (tabla de scoring, no metric view)."
+          ]
+        },
+        {
+          "id": "2ea1673306414770a7b4647c1f99d27f",
+          "question": [
+            "Siniestros abiertos con presupuestos inconsistentes"
+          ],
+          "sql": [
+            "SELECT num_siniestro, region, nivel_riesgo_modelo, nombre_taller, total_documento, total_capturado, dif_total_pct, array_join(motivos, ' · ') AS motivos FROM demo_catalog.seguros_demo.docs_validacion_presupuestos WHERE num_inconsistencias > 0 AND nivel_riesgo_modelo <> 'Cerrado' ORDER BY num_inconsistencias DESC, prob_fraude DESC"
+          ],
+          "usage_guidance": [
+            "Documentos de taller cuya información no coincide con los sistemas (IA sobre PDFs)."
+          ]
+        },
+        {
+          "id": "75f7f14e6ddc4ab384bb7cdb1bd394ec",
+          "question": [
+            "Siniestralidad por paquete"
+          ],
+          "sql": [
+            "SELECT `Paquete`, MEASURE(`Prima Emitida`) AS prima_emitida, MEASURE(`Siniestralidad %`) AS siniestralidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad GROUP BY `Paquete` ORDER BY prima_emitida DESC"
+          ],
+          "usage_guidance": [
+            "Rentabilidad técnica por paquete con MEASURE() + GROUP BY."
+          ]
+        },
+        {
+          "id": "7e032a4fe5b84eb7b809aab6967938d5",
+          "question": [
+            "Siniestralidad reportada vs última por periodo"
+          ],
+          "sql": [
+            "SELECT periodo_etiqueta, prima_devengada, siniestralidad_reportada, siniestralidad_ultima, reserva_requerida FROM demo_catalog.seguros_demo.act_siniestralidad_periodo ORDER BY periodo_ocurrencia"
+          ],
+          "usage_guidance": [
+            "Cuánto costará al final cada periodo de ocurrencia vs lo que se ve hoy."
+          ]
+        },
+        {
+          "id": "88380af893604f129d19bf5feff2e5b8",
+          "question": [
+            "Evolución anual de prima y siniestralidad"
+          ],
+          "sql": [
+            "SELECT `Año Suscripción`, MEASURE(`Prima Emitida`) AS prima, MEASURE(`Costo Incurrido`) AS incurrido, MEASURE(`Siniestralidad %`) AS siniestralidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad GROUP BY 1 ORDER BY 1"
+          ],
+          "usage_guidance": [
+            "Serie anual por año de suscripción."
+          ]
+        },
+        {
+          "id": "cbe5125109964235bcf7a99d940215a5",
+          "question": [
+            "Conversión por canal"
+          ],
+          "sql": [
+            "SELECT `Canal`, MEASURE(`Cotizaciones`) AS cotizaciones, MEASURE(`Tasa de Conversión`) AS conversion, MEASURE(`Prima Emitida (convertidas)`) AS prima FROM demo_catalog.seguros_demo.mv_comercial_canales GROUP BY 1 ORDER BY cotizaciones DESC"
+          ],
+          "usage_guidance": [
+            "Embudo comercial por canal, incluido el comparador externo."
+          ]
+        },
+        {
+          "id": "d122c354edaa478982bb584282931596",
+          "question": [
+            "Suficiencia de reservas por cobertura"
+          ],
+          "sql": [
+            "SELECT `Cobertura`, MEASURE(`Reserva de Caso`) AS reserva_caso, MEASURE(`Reserva Requerida`) AS reserva_requerida, MEASURE(`Suficiencia de Reserva`) AS suficiencia, MEASURE(`% Desarrollado`) AS pct_desarrollado FROM demo_catalog.seguros_demo.mv_reservas_actuariales GROUP BY 1 ORDER BY reserva_caso DESC"
+          ],
+          "usage_guidance": [
+            "Reserva constituida vs requerida (chain-ladder) por cobertura."
+          ]
+        },
+        {
+          "id": "e5d7dc39765140f4b263094b81658240",
+          "question": [
+            "Modelo vs veredicto del SIU"
+          ],
+          "sql": [
+            "SELECT nivel_riesgo_apertura, count(*) AS casos_cerrados, sum(fraude) AS fraudes_confirmados, avg(fraude) AS tasa_confirmacion, avg(prob_fraude_apertura) AS prob_media_modelo, sum(CASE WHEN fraude = 1 THEN monto_en_riesgo END) AS monto_evitado FROM demo_catalog.seguros_siu_expediente.etiquetas_siu GROUP BY 1 ORDER BY tasa_confirmacion DESC"
+          ],
+          "usage_guidance": [
+            "Qué tanto confirma el SIU lo que el modelo marcó (etiquetas humanas desde Lakebase)."
+          ]
+        },
+        {
+          "id": "f6b47b16e5dd404d8f426fae8ff2becb",
+          "question": [
+            "Carga de trabajo del SIU"
+          ],
+          "sql": [
+            "SELECT region, estatus, count(*) AS casos, sum(monto_en_riesgo) AS monto_en_riesgo FROM demo_catalog.seguros_siu_expediente.casos GROUP BY 1, 2 ORDER BY 1, 2"
+          ],
+          "usage_guidance": [
+            "Casos SIU por región y estatus (operados en la app, replicados por CDF)."
+          ]
+        },
+        {
+          "id": "fc233c95c06840ffab65e6354651b593",
+          "question": [
+            "Fraude por tipo de taller"
+          ],
+          "sql": [
+            "SELECT `Tipo de Taller`, MEASURE(`Siniestros`) AS siniestros, MEASURE(`Tasa de Fraude`) AS tasa_fraude, MEASURE(`Presupuesto Taller vs Autorizado`) AS ratio_presupuesto FROM demo_catalog.seguros_demo.mv_siniestros_fraude GROUP BY 1 ORDER BY tasa_fraude DESC"
+          ],
+          "usage_guidance": [
+            "Dónde se concentra el fraude en la red de talleres."
+          ]
+        }
+      ]
+    }
+  }
+}

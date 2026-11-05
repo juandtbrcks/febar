@@ -1,0 +1,3638 @@
+{
+  "datasets": [
+    {
+      "name": "ds_kpi_cartera",
+      "displayName": "ds_kpi_cartera",
+      "queryLines": [
+        "SELECT ROUND(MEASURE(`Prima Emitida`),0) prima_emitida, ROUND(MEASURE(`Prima Devengada`),0) prima_devengada, MEASURE(`Pólizas Vigentes`) vigentes, ROUND(MEASURE(`Siniestralidad %`)*100,1) siniestralidad, ROUND(MEASURE(`Frecuencia`)*100,1) frecuencia, ROUND(MEASURE(`Severidad`),0) severidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad"
+      ]
+    },
+    {
+      "name": "ds_anio",
+      "displayName": "ds_anio",
+      "queryLines": [
+        "SELECT `Año Suscripción` anio, ROUND(MEASURE(`Prima Emitida`),0) prima, ROUND(MEASURE(`Costo Incurrido`),0) incurrido, ROUND(MEASURE(`Siniestralidad %`)*100,1) siniestralidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad GROUP BY 1 ORDER BY 1"
+      ]
+    },
+    {
+      "name": "ds_paquete",
+      "displayName": "ds_paquete",
+      "queryLines": [
+        "SELECT `Paquete` paquete, ROUND(MEASURE(`Prima Emitida`),0) prima, ROUND(MEASURE(`Siniestralidad %`)*100,1) siniestralidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad GROUP BY 1 ORDER BY prima DESC"
+      ]
+    },
+    {
+      "name": "ds_region",
+      "displayName": "ds_region",
+      "queryLines": [
+        "SELECT `Región` region, ROUND(MEASURE(`Prima Emitida`),0) prima, ROUND(MEASURE(`Siniestralidad %`)*100,1) siniestralidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad GROUP BY 1 ORDER BY prima DESC"
+      ]
+    },
+    {
+      "name": "ds_canal_venta",
+      "displayName": "ds_canal_venta",
+      "queryLines": [
+        "SELECT `Canal de Venta` canal, ROUND(MEASURE(`Prima Emitida`),0) prima FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad GROUP BY 1 ORDER BY prima DESC"
+      ]
+    },
+    {
+      "name": "ds_uso",
+      "displayName": "ds_uso",
+      "queryLines": [
+        "SELECT `Uso Vehículo` uso, ROUND(MEASURE(`Frecuencia`)*100,1) frecuencia, ROUND(MEASURE(`Siniestralidad %`)*100,1) siniestralidad FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad GROUP BY 1 ORDER BY frecuencia DESC"
+      ]
+    },
+    {
+      "name": "ds_credito",
+      "displayName": "ds_credito",
+      "queryLines": [
+        "SELECT `Cliente con Crédito del Grupo` credito, MEASURE(`Clientes Únicos`) clientes FROM demo_catalog.seguros_demo.mv_cartera_rentabilidad GROUP BY 1"
+      ]
+    },
+    {
+      "name": "ds_kpi_sin",
+      "displayName": "ds_kpi_sin",
+      "queryLines": [
+        "SELECT MEASURE(`Siniestros`) siniestros, ROUND(MEASURE(`Costo Incurrido`),0) incurrido, ROUND(MEASURE(`Reserva Pendiente`),0) reserva, ROUND(MEASURE(`Tasa de Fraude`)*100,1) tasa_fraude, ROUND(MEASURE(`Monto Fraude Detectado`),0) fraude_detectado, ROUND(MEASURE(`Monto en Riesgo de Fraude`),0) monto_riesgo FROM demo_catalog.seguros_demo.mv_siniestros_fraude"
+      ]
+    },
+    {
+      "name": "ds_sin_mes",
+      "displayName": "ds_sin_mes",
+      "queryLines": [
+        "SELECT to_date(concat(`Año-Mes Ocurrencia`,'-01')) fecha, MEASURE(`Siniestros`) siniestros, ROUND(MEASURE(`Costo Incurrido`),0) incurrido FROM demo_catalog.seguros_demo.mv_siniestros_fraude GROUP BY 1 ORDER BY 1"
+      ]
+    },
+    {
+      "name": "ds_cobertura",
+      "displayName": "ds_cobertura",
+      "queryLines": [
+        "SELECT `Cobertura` cobertura, ROUND(MEASURE(`Costo Incurrido`),0) incurrido, ROUND(MEASURE(`Tasa de Fraude`)*100,1) tasa_fraude FROM demo_catalog.seguros_demo.mv_siniestros_fraude GROUP BY 1 ORDER BY incurrido DESC"
+      ]
+    },
+    {
+      "name": "ds_taller",
+      "displayName": "ds_taller",
+      "queryLines": [
+        "SELECT `Tipo de Taller` taller, ROUND(MEASURE(`Tasa de Fraude`)*100,1) tasa_fraude, ROUND(MEASURE(`Presupuesto Taller vs Autorizado`),2) ratio FROM demo_catalog.seguros_demo.mv_siniestros_fraude WHERE `Tipo de Taller` <> 'Sin taller' GROUP BY 1 ORDER BY tasa_fraude DESC"
+      ]
+    },
+    {
+      "name": "ds_nivel",
+      "displayName": "ds_nivel",
+      "queryLines": [
+        "SELECT `Nivel Riesgo Fraude` nivel, MEASURE(`Siniestros`) siniestros, ROUND(MEASURE(`Monto en Riesgo de Fraude`),0) monto_riesgo FROM demo_catalog.seguros_demo.mv_siniestros_fraude WHERE `Nivel Riesgo Fraude` IN ('Alto','Medio','Bajo') GROUP BY 1"
+      ]
+    },
+    {
+      "name": "ds_top_riesgo",
+      "displayName": "ds_top_riesgo",
+      "queryLines": [
+        "SELECT num_siniestro, cobertura, region, estado_ocurrencia, ROUND(monto_reclamado,0) monto_reclamado, ROUND(prob_fraude*100,1) prob_pct, razon_1, razon_2, razon_3 FROM demo_catalog.seguros_ml.scoring_fraude_siniestros WHERE nivel_riesgo = 'Alto' ORDER BY prob_fraude DESC, monto_reclamado DESC LIMIT 50"
+      ]
+    },
+    {
+      "name": "ds_docs_kpi",
+      "displayName": "ds_docs_kpi",
+      "queryLines": [
+        "SELECT COUNT(1) docs, COUNT_IF(num_inconsistencias > 0) con_inc, ROUND(AVG(CASE WHEN num_inconsistencias > 0 THEN 100.0 ELSE 0 END),1) pct_inc, ROUND(SUM(CASE WHEN total_no_coincide THEN total_documento - total_capturado ELSE 0 END),0) sobreprecio FROM demo_catalog.seguros_demo.docs_validacion_presupuestos"
+      ]
+    },
+    {
+      "name": "ds_docs_nivel",
+      "displayName": "ds_docs_nivel",
+      "queryLines": [
+        "SELECT nivel_riesgo_modelo nivel, ROUND(AVG(CASE WHEN num_inconsistencias > 0 THEN 100.0 ELSE 0 END),1) pct_inc FROM demo_catalog.seguros_demo.docs_validacion_presupuestos WHERE nivel_riesgo_modelo IN ('Alto','Medio','Bajo') GROUP BY 1"
+      ]
+    },
+    {
+      "name": "ds_docs_motivo",
+      "displayName": "ds_docs_motivo",
+      "queryLines": [
+        "SELECT m motivo, COUNT(1) documentos FROM demo_catalog.seguros_demo.docs_validacion_presupuestos LATERAL VIEW explode(motivos) t AS m GROUP BY 1 ORDER BY 2 DESC"
+      ]
+    },
+    {
+      "name": "ds_docs_bandeja",
+      "displayName": "ds_docs_bandeja",
+      "queryLines": [
+        "SELECT num_siniestro, region, nivel_riesgo_modelo nivel, nombre_taller, ROUND(total_documento,0) total_documento, ROUND(total_capturado,0) total_capturado, ROUND(dif_total_pct*100,1) dif_pct, array_join(motivos, ' · ') motivos FROM demo_catalog.seguros_demo.docs_validacion_presupuestos WHERE num_inconsistencias > 0 AND nivel_riesgo_modelo <> 'Cerrado' ORDER BY num_inconsistencias DESC, prob_fraude DESC NULLS LAST"
+      ]
+    },
+    {
+      "name": "ds_kpi_com",
+      "displayName": "ds_kpi_com",
+      "queryLines": [
+        "SELECT MEASURE(`Cotizaciones`) cotizaciones, ROUND(MEASURE(`Tasa de Conversión`)*100,1) conversion, ROUND(MEASURE(`Prima Emitida (convertidas)`),0) prima, ROUND(MEASURE(`Prima Cotizada Promedio`),0) prima_prom FROM demo_catalog.seguros_demo.mv_comercial_canales"
+      ]
+    },
+    {
+      "name": "ds_canal",
+      "displayName": "ds_canal",
+      "queryLines": [
+        "SELECT `Canal` canal, MEASURE(`Cotizaciones`) cotizaciones, ROUND(MEASURE(`Tasa de Conversión`)*100,1) conversion, ROUND(MEASURE(`Prima Emitida (convertidas)`),0) prima, ROUND(MEASURE(`Brecha de Precio No Convertidas`)*100,1) brecha FROM demo_catalog.seguros_demo.mv_comercial_canales GROUP BY 1 ORDER BY cotizaciones DESC"
+      ]
+    },
+    {
+      "name": "ds_cot_mes",
+      "displayName": "ds_cot_mes",
+      "queryLines": [
+        "SELECT to_date(concat(`Año-Mes`,'-01')) fecha, MEASURE(`Cotizaciones`) cotizaciones, MEASURE(`Cotizaciones Convertidas`) convertidas FROM demo_catalog.seguros_demo.mv_comercial_canales GROUP BY 1 ORDER BY 1"
+      ]
+    },
+    {
+      "name": "ds_edad",
+      "displayName": "ds_edad",
+      "queryLines": [
+        "SELECT `Rango Edad Conductor` edad, ROUND(MEASURE(`Tasa de Conversión`)*100,1) conversion FROM demo_catalog.seguros_demo.mv_comercial_canales GROUP BY 1 ORDER BY 1"
+      ]
+    },
+    {
+      "name": "ds_kpi_res",
+      "displayName": "ds_kpi_res",
+      "queryLines": [
+        "SELECT ROUND(MEASURE(`Pagado`),0) pagado, ROUND(MEASURE(`Reserva de Caso`),0) caso, ROUND(MEASURE(`Reserva Requerida`),0) requerida, ROUND(MEASURE(`Suficiencia de Reserva`),0) suficiencia, ROUND(MEASURE(`Suficiencia %`)*100,1) suficiencia_pct FROM demo_catalog.seguros_demo.mv_reservas_actuariales"
+      ]
+    },
+    {
+      "name": "ds_res_alto",
+      "displayName": "ds_res_alto",
+      "queryLines": [
+        "SELECT ROUND(SUM(f.reserva_pendiente),0) reserva_alto FROM demo_catalog.seguros_demo.fact_siniestros f JOIN demo_catalog.seguros_ml.scoring_fraude_siniestros s ON f.id_siniestro = s.id_siniestro WHERE s.nivel_riesgo = 'Alto'"
+      ]
+    },
+    {
+      "name": "ds_res_cob",
+      "displayName": "ds_res_cob",
+      "queryLines": [
+        "SELECT cobertura, tipo, monto FROM (SELECT `Cobertura` cobertura, ROUND(MEASURE(`Reserva de Caso`),0) caso, ROUND(MEASURE(`Reserva Requerida`),0) req FROM demo_catalog.seguros_demo.mv_reservas_actuariales GROUP BY 1) UNPIVOT (monto FOR tipo IN (caso AS `Reserva de caso constituida`, req AS `Reserva requerida (chain-ladder)`)) ORDER BY cobertura"
+      ]
+    },
+    {
+      "name": "ds_triangulo",
+      "displayName": "ds_triangulo",
+      "queryLines": [
+        "SELECT periodo_etiqueta periodo, MAX(CASE WHEN edad_meses = 12 THEN concat(format_number(pagado / 1e6, 1), CASE WHEN tipo_celda = 'Proyectado' THEN ' ▸' ELSE '' END) END) m12, MAX(CASE WHEN edad_meses = 24 THEN concat(format_number(pagado / 1e6, 1), CASE WHEN tipo_celda = 'Proyectado' THEN ' ▸' ELSE '' END) END) m24, MAX(CASE WHEN edad_meses = 36 THEN concat(format_number(pagado / 1e6, 1), CASE WHEN tipo_celda = 'Proyectado' THEN ' ▸' ELSE '' END) END) m36, MAX(CASE WHEN edad_meses = 48 THEN concat(format_number(pagado / 1e6, 1), CASE WHEN tipo_celda = 'Proyectado' THEN ' ▸' ELSE '' END) END) m48, MAX(CASE WHEN edad_meses = 60 THEN concat(format_number(pagado / 1e6, 1), CASE WHEN tipo_celda = 'Proyectado' THEN ' ▸' ELSE '' END) END) m60, MAX(CASE WHEN edad_meses = 72 THEN concat(format_number(pagado / 1e6, 1), CASE WHEN tipo_celda = 'Proyectado' THEN ' ▸' ELSE '' END) END) m72 FROM (SELECT periodo_ocurrencia, periodo_etiqueta, edad_meses, tipo_celda, SUM(pagado_acumulado) pagado FROM demo_catalog.seguros_demo.act_triangulo GROUP BY ALL) GROUP BY periodo_ocurrencia, periodo_etiqueta ORDER BY periodo_ocurrencia"
+      ]
+    },
+    {
+      "name": "ds_patron",
+      "displayName": "ds_patron",
+      "queryLines": [
+        "SELECT cobertura, edad_meses, ROUND(pct_desarrollado*100,1) pct FROM demo_catalog.seguros_demo.act_factores_desarrollo ORDER BY cobertura, edad_meses"
+      ]
+    },
+    {
+      "name": "ds_factores",
+      "displayName": "ds_factores",
+      "queryLines": [
+        "SELECT cobertura, MAX(CASE WHEN edad_meses = 12 THEN factor_edad_a_edad END) f12_24, MAX(CASE WHEN edad_meses = 24 THEN factor_edad_a_edad END) f24_36, MAX(CASE WHEN edad_meses = 36 THEN factor_edad_a_edad END) f36_48, MAX(CASE WHEN edad_meses = 48 THEN factor_edad_a_edad END) f48_60, MAX(CASE WHEN edad_meses = 60 THEN factor_edad_a_edad END) f60_72, MAX(CASE WHEN edad_meses = 12 THEN factor_a_ultimo END) cdf12 FROM demo_catalog.seguros_demo.act_factores_desarrollo GROUP BY 1 ORDER BY cdf12 DESC"
+      ]
+    },
+    {
+      "name": "ds_sin_periodo",
+      "displayName": "ds_sin_periodo",
+      "queryLines": [
+        "SELECT periodo, tipo, valor FROM (SELECT periodo_etiqueta periodo, ROUND(siniestralidad_reportada*100,1) rep, ROUND(siniestralidad_ultima*100,1) ult FROM demo_catalog.seguros_demo.act_siniestralidad_periodo) UNPIVOT (valor FOR tipo IN (rep AS `Reportada (incurrido)`, ult AS `Última estimada (chain-ladder)`)) ORDER BY periodo"
+      ]
+    },
+    {
+      "name": "ds_res_det",
+      "displayName": "ds_res_det",
+      "queryLines": [
+        "SELECT cobertura, periodo_etiqueta periodo, edad_meses, ROUND(pagado,0) pagado, ROUND(reserva_caso,0) caso, ROUND(ultimo_estimado,0) ultimo, ROUND(reserva_requerida,0) requerida, ROUND(suficiencia_reserva,0) suficiencia FROM demo_catalog.seguros_demo.act_reservas WHERE reserva_caso > 0 OR reserva_requerida > 0 ORDER BY reserva_caso DESC"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "page_cartera",
+      "displayName": "Cartera y Rentabilidad",
+      "layout": [
+        {
+          "widget": {
+            "name": "p1-title",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# 🚗 Aseguradora FSI · Autos — Cartera y Rentabilidad"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-sub",
+            "multilineTextboxSpec": {
+              "lines": [
+                "Prima, cartera y rentabilidad técnica · Una sola fuente gobernada (sin extractos) · Metric view `mv_cartera_rentabilidad`"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-k1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_cartera",
+                  "fields": [
+                    {
+                      "name": "prima_emitida",
+                      "expression": "`prima_emitida`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "prima_emitida",
+                  "displayName": "Prima Emitida (MXN)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Prima Emitida (MXN)"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 4,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-k2",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_cartera",
+                  "fields": [
+                    {
+                      "name": "prima_devengada",
+                      "expression": "`prima_devengada`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Prima Devengada (MXN)",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "prima_devengada",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  },
+                  "displayName": "Prima Devengada (MXN)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 4,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-k3",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_cartera",
+                  "fields": [
+                    {
+                      "name": "vigentes",
+                      "expression": "`vigentes`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Pólizas Vigentes",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "vigentes",
+                  "displayName": "Pólizas Vigentes"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 2,
+            "width": 4,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-k4",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_cartera",
+                  "fields": [
+                    {
+                      "name": "siniestralidad",
+                      "expression": "`siniestralidad`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "siniestralidad",
+                  "displayName": "Siniestralidad %"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Siniestralidad %"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 4,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-k5",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_cartera",
+                  "fields": [
+                    {
+                      "name": "frecuencia",
+                      "expression": "`frecuencia`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "frecuencia",
+                  "displayName": "Frecuencia (siniestros por 100 autos-año)"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Frecuencia (siniestros por 100 autos-año)"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 5,
+            "width": 4,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-k6",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_cartera",
+                  "fields": [
+                    {
+                      "name": "severidad",
+                      "expression": "`severidad`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "severidad",
+                  "displayName": "Severidad (MXN por siniestro)"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Severidad (MXN por siniestro)"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 5,
+            "width": 4,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-h1",
+            "multilineTextboxSpec": {
+              "lines": [
+                "### Evolución por año de suscripción"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-prima-anio",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_anio",
+                  "fields": [
+                    {
+                      "name": "anio",
+                      "expression": "`anio`"
+                    },
+                    {
+                      "name": "prima",
+                      "expression": "`prima`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "anio",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x"
+                    }
+                  },
+                  "displayName": "Año"
+                },
+                "y": {
+                  "fieldName": "prima",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Prima Emitida"
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Prima Emitida por Año"
+              },
+              "mark": {
+                "colors": [
+                  "#FF3621",
+                  "#1B3139",
+                  "#00A972",
+                  "#FFAB00",
+                  "#8BCAE7",
+                  "#AB4057",
+                  "#99DDB4",
+                  "#919191"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-sin-anio",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_anio",
+                  "fields": [
+                    {
+                      "name": "anio",
+                      "expression": "`anio`"
+                    },
+                    {
+                      "name": "siniestralidad",
+                      "expression": "`siniestralidad`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Siniestralidad % por Año (años recientes aún en desarrollo)",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "mark": {
+                "colors": [
+                  "#1B3139"
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "anio",
+                  "displayName": "Año",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "siniestralidad",
+                  "displayName": "Siniestralidad %",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 9,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-h2",
+            "multilineTextboxSpec": {
+              "lines": [
+                "### ¿Dónde ganamos y dónde perdemos?"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 15,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-paq",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_paquete",
+                  "fields": [
+                    {
+                      "name": "paquete",
+                      "expression": "`paquete`"
+                    },
+                    {
+                      "name": "prima",
+                      "expression": "`prima`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "paquete",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  },
+                  "displayName": "Paquete"
+                },
+                "y": {
+                  "fieldName": "prima",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Prima Emitida"
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Prima Emitida por Paquete"
+              },
+              "mark": {
+                "colors": [
+                  "#FF3621",
+                  "#1B3139",
+                  "#00A972",
+                  "#FFAB00",
+                  "#8BCAE7",
+                  "#AB4057",
+                  "#99DDB4",
+                  "#919191"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 16,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-reg",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_region",
+                  "fields": [
+                    {
+                      "name": "region",
+                      "expression": "`region`"
+                    },
+                    {
+                      "name": "siniestralidad",
+                      "expression": "`siniestralidad`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "region",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  },
+                  "displayName": "Región"
+                },
+                "y": {
+                  "fieldName": "siniestralidad",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Siniestralidad %"
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Siniestralidad % por Región"
+              },
+              "mark": {
+                "colors": [
+                  "#FF3621"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 16,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-canal",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_canal_venta",
+                  "fields": [
+                    {
+                      "name": "prima",
+                      "expression": "`prima`"
+                    },
+                    {
+                      "name": "canal",
+                      "expression": "`canal`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "prima",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "prima"
+                },
+                "color": {
+                  "fieldName": "canal",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "canal"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Prima Emitida por Canal de Venta"
+              },
+              "mark": {
+                "colors": [
+                  "#FF3621",
+                  "#1B3139",
+                  "#00A972",
+                  "#FFAB00",
+                  "#8BCAE7",
+                  "#AB4057",
+                  "#99DDB4",
+                  "#919191"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 22,
+            "width": 4,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-uso",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_uso",
+                  "fields": [
+                    {
+                      "name": "uso",
+                      "expression": "`uso`"
+                    },
+                    {
+                      "name": "frecuencia",
+                      "expression": "`frecuencia`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "uso",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  },
+                  "displayName": "Uso del Vehículo"
+                },
+                "y": {
+                  "fieldName": "frecuencia",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Frecuencia (por 100 autos-año)"
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Frecuencia por Uso del Vehículo"
+              },
+              "mark": {
+                "colors": [
+                  "#1B3139"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 22,
+            "width": 4,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p1-cred",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_credito",
+                  "fields": [
+                    {
+                      "name": "clientes",
+                      "expression": "`clientes`"
+                    },
+                    {
+                      "name": "credito",
+                      "expression": "`credito`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "clientes",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "clientes"
+                },
+                "color": {
+                  "fieldName": "credito",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "credito"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Asegurados con Crédito del Grupo (cruce DWH ⇄ AWS)"
+              },
+              "mark": {
+                "colors": [
+                  "#00A972",
+                  "#919191"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 22,
+            "width": 4,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "page_siniestros",
+      "displayName": "Siniestros y Fraude",
+      "layout": [
+        {
+          "widget": {
+            "name": "p2-title",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# 🛡️ Siniestros y Fraude"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-sub",
+            "multilineTextboxSpec": {
+              "lines": [
+                "Costo de siniestros, dictámenes SIU y riesgo de fraude del modelo `modelo_fraude_siniestros@champion` · Metric view `mv_siniestros_fraude`"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-k1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_sin",
+                  "fields": [
+                    {
+                      "name": "siniestros",
+                      "expression": "`siniestros`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "siniestros",
+                  "displayName": "Siniestros"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Siniestros"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-k2",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_sin",
+                  "fields": [
+                    {
+                      "name": "incurrido",
+                      "expression": "`incurrido`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "incurrido",
+                  "displayName": "Costo Incurrido (MXN)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Costo Incurrido (MXN)"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-k3",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_sin",
+                  "fields": [
+                    {
+                      "name": "reserva",
+                      "expression": "`reserva`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "reserva",
+                  "displayName": "Reserva Pendiente (MXN)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Reserva Pendiente (MXN)"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-k4",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_sin",
+                  "fields": [
+                    {
+                      "name": "tasa_fraude",
+                      "expression": "`tasa_fraude`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "tasa_fraude",
+                  "displayName": "Tasa de Fraude Confirmado %"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Tasa de Fraude Confirmado %"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-k5",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_sin",
+                  "fields": [
+                    {
+                      "name": "fraude_detectado",
+                      "expression": "`fraude_detectado`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "fraude_detectado",
+                  "displayName": "Monto Fraude Detectado (MXN)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Monto Fraude Detectado (MXN)"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 5,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-k6",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_sin",
+                  "fields": [
+                    {
+                      "name": "monto_riesgo",
+                      "expression": "`monto_riesgo`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "monto_riesgo",
+                  "displayName": "Monto en Riesgo — abiertos (MXN)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Monto en Riesgo — abiertos (MXN)"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 5,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-h1",
+            "multilineTextboxSpec": {
+              "lines": [
+                "### Tendencia y composición del costo"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-mes",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_sin_mes",
+                  "fields": [
+                    {
+                      "name": "fecha",
+                      "expression": "`fecha`"
+                    },
+                    {
+                      "name": "incurrido",
+                      "expression": "`incurrido`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "fecha",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "Mes de ocurrencia"
+                },
+                "y": {
+                  "fieldName": "incurrido",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Costo Incurrido"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Costo Incurrido por Mes"
+              },
+              "mark": {
+                "colors": [
+                  "#FF3621",
+                  "#1B3139",
+                  "#00A972",
+                  "#FFAB00",
+                  "#8BCAE7",
+                  "#AB4057",
+                  "#99DDB4",
+                  "#919191"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 4,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-cob",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_cobertura",
+                  "fields": [
+                    {
+                      "name": "cobertura",
+                      "expression": "`cobertura`"
+                    },
+                    {
+                      "name": "incurrido",
+                      "expression": "`incurrido`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "cobertura",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  },
+                  "displayName": "Cobertura"
+                },
+                "y": {
+                  "fieldName": "incurrido",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Costo Incurrido"
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Costo por Cobertura"
+              },
+              "mark": {
+                "colors": [
+                  "#FF3621",
+                  "#1B3139",
+                  "#00A972",
+                  "#FFAB00",
+                  "#8BCAE7",
+                  "#AB4057",
+                  "#99DDB4",
+                  "#919191"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 9,
+            "width": 2,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-h2",
+            "multilineTextboxSpec": {
+              "lines": [
+                "### Fraude: ¿dónde está?"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 15,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-cobf",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_cobertura",
+                  "fields": [
+                    {
+                      "name": "cobertura",
+                      "expression": "`cobertura`"
+                    },
+                    {
+                      "name": "tasa_fraude",
+                      "expression": "`tasa_fraude`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "cobertura",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  },
+                  "displayName": "Cobertura"
+                },
+                "y": {
+                  "fieldName": "tasa_fraude",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Tasa de Fraude %"
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Tasa de Fraude por Cobertura"
+              },
+              "mark": {
+                "colors": [
+                  "#FF3621"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 16,
+            "width": 2,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-tal",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_taller",
+                  "fields": [
+                    {
+                      "name": "taller",
+                      "expression": "`taller`"
+                    },
+                    {
+                      "name": "tasa_fraude",
+                      "expression": "`tasa_fraude`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "taller",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  },
+                  "displayName": "Tipo de Taller"
+                },
+                "y": {
+                  "fieldName": "tasa_fraude",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Tasa de Fraude %"
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Tasa de Fraude por Tipo de Taller"
+              },
+              "mark": {
+                "colors": [
+                  "#AB4057"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 16,
+            "width": 2,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-niv",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_nivel",
+                  "fields": [
+                    {
+                      "name": "nivel",
+                      "expression": "`nivel`"
+                    },
+                    {
+                      "name": "siniestros",
+                      "expression": "`siniestros`"
+                    },
+                    {
+                      "name": "nivel",
+                      "expression": "`nivel`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "nivel",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "Nivel de Riesgo"
+                },
+                "y": {
+                  "fieldName": "siniestros",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Siniestros abiertos"
+                },
+                "label": {
+                  "show": true
+                },
+                "color": {
+                  "fieldName": "nivel",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "Alto",
+                        "color": "#FF3621"
+                      },
+                      {
+                        "value": "Medio",
+                        "color": "#FFAB00"
+                      },
+                      {
+                        "value": "Bajo",
+                        "color": "#00A972"
+                      }
+                    ]
+                  },
+                  "displayName": "Nivel de Riesgo"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Siniestros Abiertos por Nivel de Riesgo (modelo)"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 16,
+            "width": 2,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-top",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_top_riesgo",
+                  "fields": [
+                    {
+                      "name": "num_siniestro",
+                      "expression": "`num_siniestro`"
+                    },
+                    {
+                      "name": "cobertura",
+                      "expression": "`cobertura`"
+                    },
+                    {
+                      "name": "region",
+                      "expression": "`region`"
+                    },
+                    {
+                      "name": "estado_ocurrencia",
+                      "expression": "`estado_ocurrencia`"
+                    },
+                    {
+                      "name": "monto_reclamado",
+                      "expression": "`monto_reclamado`"
+                    },
+                    {
+                      "name": "prob_pct",
+                      "expression": "`prob_pct`"
+                    },
+                    {
+                      "name": "razon_1",
+                      "expression": "`razon_1`"
+                    },
+                    {
+                      "name": "razon_2",
+                      "expression": "`razon_2`"
+                    },
+                    {
+                      "name": "razon_3",
+                      "expression": "`razon_3`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "num_siniestro",
+                    "displayName": "Siniestro"
+                  },
+                  {
+                    "fieldName": "cobertura",
+                    "displayName": "Cobertura"
+                  },
+                  {
+                    "fieldName": "region",
+                    "displayName": "Región"
+                  },
+                  {
+                    "fieldName": "estado_ocurrencia",
+                    "displayName": "Estado"
+                  },
+                  {
+                    "fieldName": "monto_reclamado",
+                    "displayName": "Monto Reclamado"
+                  },
+                  {
+                    "fieldName": "prob_pct",
+                    "displayName": "Prob. Fraude %"
+                  },
+                  {
+                    "fieldName": "razon_1",
+                    "displayName": "Razón 1"
+                  },
+                  {
+                    "fieldName": "razon_2",
+                    "displayName": "Razón 2"
+                  },
+                  {
+                    "fieldName": "razon_3",
+                    "displayName": "Razón 3"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Bandeja SIU — siniestros abiertos de riesgo Alto (con razones del modelo)"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 22,
+            "width": 6,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-h3",
+            "multilineTextboxSpec": {
+              "lines": [
+                "### 📄 IA sobre documentos: presupuestos de taller (PDF) validados contra los sistemas"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 30,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-docs-sub",
+            "multilineTextboxSpec": {
+              "lines": [
+                "`ai_parse_document` lee el PDF → `ai_query` extrae los campos en JSON → se cruzan con la valuación capturada, el vehículo asegurado y la fecha del siniestro · Volume `documentos_siniestros` · tabla `docs_validacion_presupuestos`"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 31,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-d1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_docs_kpi",
+                  "fields": [
+                    {
+                      "name": "docs",
+                      "expression": "`docs`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "docs",
+                  "displayName": "Presupuestos procesados"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Presupuestos procesados"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 32,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-d2",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_docs_kpi",
+                  "fields": [
+                    {
+                      "name": "pct_inc",
+                      "expression": "`pct_inc`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "pct_inc",
+                  "displayName": "% con inconsistencias"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "% con inconsistencias"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 32,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-d3",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_docs_kpi",
+                  "fields": [
+                    {
+                      "name": "sobreprecio",
+                      "expression": "`sobreprecio`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sobreprecio",
+                  "displayName": "Sobreprecio documentado vs capturado (MXN)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Sobreprecio documentado vs capturado (MXN)"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 32,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-dniv",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_docs_nivel",
+                  "fields": [
+                    {
+                      "name": "nivel",
+                      "expression": "`nivel`"
+                    },
+                    {
+                      "name": "pct_inc",
+                      "expression": "`pct_inc`"
+                    },
+                    {
+                      "name": "nivel",
+                      "expression": "`nivel`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "nivel",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "Nivel de riesgo (modelo)"
+                },
+                "y": {
+                  "fieldName": "pct_inc",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "% con inconsistencias"
+                },
+                "label": {
+                  "show": true
+                },
+                "color": {
+                  "fieldName": "nivel",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "Alto",
+                        "color": "#FF3621"
+                      },
+                      {
+                        "value": "Medio",
+                        "color": "#FFAB00"
+                      },
+                      {
+                        "value": "Bajo",
+                        "color": "#00A972"
+                      }
+                    ]
+                  },
+                  "displayName": "Nivel de riesgo (modelo)"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "% de documentos con inconsistencias por nivel de riesgo del modelo"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 35,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-dmot",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_docs_motivo",
+                  "fields": [
+                    {
+                      "name": "motivo",
+                      "expression": "`motivo`"
+                    },
+                    {
+                      "name": "documentos",
+                      "expression": "`documentos`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "motivo",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  },
+                  "displayName": "Motivo"
+                },
+                "y": {
+                  "fieldName": "documentos",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Documentos"
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Inconsistencias detectadas por tipo"
+              },
+              "mark": {
+                "colors": [
+                  "#AB4057"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 35,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p2-dband",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_docs_bandeja",
+                  "fields": [
+                    {
+                      "name": "num_siniestro",
+                      "expression": "`num_siniestro`"
+                    },
+                    {
+                      "name": "region",
+                      "expression": "`region`"
+                    },
+                    {
+                      "name": "nivel",
+                      "expression": "`nivel`"
+                    },
+                    {
+                      "name": "nombre_taller",
+                      "expression": "`nombre_taller`"
+                    },
+                    {
+                      "name": "total_documento",
+                      "expression": "`total_documento`"
+                    },
+                    {
+                      "name": "total_capturado",
+                      "expression": "`total_capturado`"
+                    },
+                    {
+                      "name": "dif_pct",
+                      "expression": "`dif_pct`"
+                    },
+                    {
+                      "name": "motivos",
+                      "expression": "`motivos`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "num_siniestro",
+                    "displayName": "Siniestro"
+                  },
+                  {
+                    "fieldName": "region",
+                    "displayName": "Región"
+                  },
+                  {
+                    "fieldName": "nivel",
+                    "displayName": "Riesgo modelo"
+                  },
+                  {
+                    "fieldName": "nombre_taller",
+                    "displayName": "Taller"
+                  },
+                  {
+                    "fieldName": "total_documento",
+                    "displayName": "Total documento"
+                  },
+                  {
+                    "fieldName": "total_capturado",
+                    "displayName": "Total capturado"
+                  },
+                  {
+                    "fieldName": "dif_pct",
+                    "displayName": "Diferencia %"
+                  },
+                  {
+                    "fieldName": "motivos",
+                    "displayName": "Inconsistencias"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Siniestros abiertos con inconsistencias documentales (incluye casos que el modelo calificó Bajo)"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 41,
+            "width": 6,
+            "height": 8
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "page_comercial",
+      "displayName": "Comercial y Canales",
+      "layout": [
+        {
+          "widget": {
+            "name": "p3-title",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# 📈 Comercial y Canales"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p3-sub",
+            "multilineTextboxSpec": {
+              "lines": [
+                "Embudo de cotización → póliza por canal, incluidas integraciones externas (comparadores) · Metric view `mv_comercial_canales`"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p3-k1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_com",
+                  "fields": [
+                    {
+                      "name": "cotizaciones",
+                      "expression": "`cotizaciones`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "cotizaciones",
+                  "displayName": "Cotizaciones"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Cotizaciones"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p3-k2",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_com",
+                  "fields": [
+                    {
+                      "name": "conversion",
+                      "expression": "`conversion`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "conversion",
+                  "displayName": "Tasa de Conversión %"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Tasa de Conversión %"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p3-k3",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_com",
+                  "fields": [
+                    {
+                      "name": "prima",
+                      "expression": "`prima`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "prima",
+                  "displayName": "Prima Emitida desde Cotización (MXN)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Prima Emitida desde Cotización (MXN)"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p3-h1",
+            "multilineTextboxSpec": {
+              "lines": [
+                "### Desempeño por canal"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p3-cot",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_canal",
+                  "fields": [
+                    {
+                      "name": "canal",
+                      "expression": "`canal`"
+                    },
+                    {
+                      "name": "cotizaciones",
+                      "expression": "`cotizaciones`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "canal",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  },
+                  "displayName": "Canal"
+                },
+                "y": {
+                  "fieldName": "cotizaciones",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Cotizaciones"
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Cotizaciones por Canal"
+              },
+              "mark": {
+                "colors": [
+                  "#FF3621",
+                  "#1B3139",
+                  "#00A972",
+                  "#FFAB00",
+                  "#8BCAE7",
+                  "#AB4057",
+                  "#99DDB4",
+                  "#919191"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p3-conv",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_canal",
+                  "fields": [
+                    {
+                      "name": "canal",
+                      "expression": "`canal`"
+                    },
+                    {
+                      "name": "conversion",
+                      "expression": "`conversion`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "canal",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  },
+                  "displayName": "Canal"
+                },
+                "y": {
+                  "fieldName": "conversion",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Conversión %"
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Tasa de Conversión por Canal"
+              },
+              "mark": {
+                "colors": [
+                  "#00A972"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 6,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p3-mes",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_cot_mes",
+                  "fields": [
+                    {
+                      "name": "fecha",
+                      "expression": "`fecha`"
+                    },
+                    {
+                      "name": "cotizaciones",
+                      "expression": "`cotizaciones`"
+                    },
+                    {
+                      "name": "convertidas",
+                      "expression": "`convertidas`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "fecha",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "Mes"
+                },
+                "y": {
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "fields": [
+                    {
+                      "fieldName": "cotizaciones",
+                      "displayName": "Cotizaciones"
+                    },
+                    {
+                      "fieldName": "convertidas",
+                      "displayName": "Convertidas"
+                    }
+                  ]
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Cotizaciones vs Convertidas por Mes"
+              },
+              "mark": {
+                "colors": [
+                  "#FF3621",
+                  "#1B3139",
+                  "#00A972",
+                  "#FFAB00",
+                  "#8BCAE7",
+                  "#AB4057",
+                  "#99DDB4",
+                  "#919191"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 4,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p3-edad",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_edad",
+                  "fields": [
+                    {
+                      "name": "edad",
+                      "expression": "`edad`"
+                    },
+                    {
+                      "name": "conversion",
+                      "expression": "`conversion`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "edad",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x"
+                    }
+                  },
+                  "displayName": "Edad del Conductor"
+                },
+                "y": {
+                  "fieldName": "conversion",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Conversión %"
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Conversión por Edad del Conductor"
+              },
+              "mark": {
+                "colors": [
+                  "#1B3139"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 12,
+            "width": 2,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p3-tbl",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_canal",
+                  "fields": [
+                    {
+                      "name": "canal",
+                      "expression": "`canal`"
+                    },
+                    {
+                      "name": "cotizaciones",
+                      "expression": "`cotizaciones`"
+                    },
+                    {
+                      "name": "conversion",
+                      "expression": "`conversion`"
+                    },
+                    {
+                      "name": "prima",
+                      "expression": "`prima`"
+                    },
+                    {
+                      "name": "brecha",
+                      "expression": "`brecha`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "canal",
+                    "displayName": "Canal"
+                  },
+                  {
+                    "fieldName": "cotizaciones",
+                    "displayName": "Cotizaciones"
+                  },
+                  {
+                    "fieldName": "conversion",
+                    "displayName": "Conversión %"
+                  },
+                  {
+                    "fieldName": "prima",
+                    "displayName": "Prima Emitida"
+                  },
+                  {
+                    "fieldName": "brecha",
+                    "displayName": "Brecha de precio no convertidas %"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Detalle por Canal — la brecha indica sensibilidad a precio"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 18,
+            "width": 6,
+            "height": 5
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "page_reservas",
+      "displayName": "Reservas (Actuarial)",
+      "layout": [
+        {
+          "widget": {
+            "name": "p4-title",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# 📐 Reservas de Siniestros — Chain-Ladder"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-sub",
+            "multilineTextboxSpec": {
+              "lines": [
+                "Valuación al **30-sep-2026** · Triángulos de desarrollo sobre la misma tabla gobernada `fact_movtos_siniestro` (sin extractos) · Metric view `mv_reservas_actuariales` · Periodos de ocurrencia oct–sep"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-k1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_res",
+                  "fields": [
+                    {
+                      "name": "caso",
+                      "expression": "`caso`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "caso",
+                  "displayName": "Reserva de Caso Constituida (MXN)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Reserva de Caso Constituida (MXN)"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-k2",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_res",
+                  "fields": [
+                    {
+                      "name": "requerida",
+                      "expression": "`requerida`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "requerida",
+                  "displayName": "Reserva Requerida — chain-ladder (MXN)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Reserva Requerida — chain-ladder (MXN)"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-k3",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_res",
+                  "fields": [
+                    {
+                      "name": "suficiencia",
+                      "expression": "`suficiencia`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "suficiencia",
+                  "displayName": "Suficiencia: reserva sobrada (MXN)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Suficiencia: reserva sobrada (MXN)"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-k4",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_res",
+                  "fields": [
+                    {
+                      "name": "suficiencia_pct",
+                      "expression": "`suficiencia_pct`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "suficiencia_pct",
+                  "displayName": "Suficiencia % sobre lo requerido"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Suficiencia % sobre lo requerido"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-k5",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi_res",
+                  "fields": [
+                    {
+                      "name": "pagado",
+                      "expression": "`pagado`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "pagado",
+                  "displayName": "Pagado acumulado (MXN)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Pagado acumulado (MXN)"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 5,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-k6",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_res_alto",
+                  "fields": [
+                    {
+                      "name": "reserva_alto",
+                      "expression": "`reserva_alto`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "reserva_alto",
+                  "displayName": "Reserva de caso en siniestros con riesgo ALTO de fraude (MXN)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Reserva de caso en siniestros con riesgo ALTO de fraude (MXN)"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 5,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-h1",
+            "multilineTextboxSpec": {
+              "lines": [
+                "### ¿Dónde está la reserva y cuánto se necesita realmente?"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-cob",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_res_cob",
+                  "fields": [
+                    {
+                      "name": "cobertura",
+                      "expression": "`cobertura`"
+                    },
+                    {
+                      "name": "monto",
+                      "expression": "`monto`"
+                    },
+                    {
+                      "name": "tipo",
+                      "expression": "`tipo`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "cobertura",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "Cobertura"
+                },
+                "y": {
+                  "fieldName": "monto",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "MXN"
+                },
+                "label": {
+                  "show": true
+                },
+                "color": {
+                  "fieldName": "tipo",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "Reserva"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Reserva de caso vs requerida por cobertura"
+              },
+              "mark": {
+                "colors": [
+                  "#1B3139",
+                  "#FF3621"
+                ],
+                "layout": "group"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 3,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-patron",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_patron",
+                  "fields": [
+                    {
+                      "name": "edad_meses",
+                      "expression": "`edad_meses`"
+                    },
+                    {
+                      "name": "pct",
+                      "expression": "`pct`"
+                    },
+                    {
+                      "name": "cobertura",
+                      "expression": "`cobertura`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "edad_meses",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Edad (meses)"
+                },
+                "y": {
+                  "fieldName": "pct",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "% desarrollado"
+                },
+                "color": {
+                  "fieldName": "cobertura",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "cobertura"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Patrón de pago: % del costo final pagado por edad"
+              },
+              "mark": {
+                "colors": [
+                  "#FF3621",
+                  "#1B3139",
+                  "#00A972",
+                  "#FFAB00",
+                  "#8BCAE7",
+                  "#AB4057",
+                  "#99DDB4",
+                  "#919191"
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 9,
+            "width": 3,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-h2",
+            "multilineTextboxSpec": {
+              "lines": [
+                "### Triángulo de pagos acumulados (MXN millones, todas las coberturas) · ▸ = proyección chain-ladder"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 16,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-tri",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_triangulo",
+                  "fields": [
+                    {
+                      "name": "periodo",
+                      "expression": "`periodo`"
+                    },
+                    {
+                      "name": "m12",
+                      "expression": "`m12`"
+                    },
+                    {
+                      "name": "m24",
+                      "expression": "`m24`"
+                    },
+                    {
+                      "name": "m36",
+                      "expression": "`m36`"
+                    },
+                    {
+                      "name": "m48",
+                      "expression": "`m48`"
+                    },
+                    {
+                      "name": "m60",
+                      "expression": "`m60`"
+                    },
+                    {
+                      "name": "m72",
+                      "expression": "`m72`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "periodo",
+                    "displayName": "Periodo de ocurrencia"
+                  },
+                  {
+                    "fieldName": "m12",
+                    "displayName": "12 meses"
+                  },
+                  {
+                    "fieldName": "m24",
+                    "displayName": "24 meses"
+                  },
+                  {
+                    "fieldName": "m36",
+                    "displayName": "36 meses"
+                  },
+                  {
+                    "fieldName": "m48",
+                    "displayName": "48 meses"
+                  },
+                  {
+                    "fieldName": "m60",
+                    "displayName": "60 meses"
+                  },
+                  {
+                    "fieldName": "m72",
+                    "displayName": "72 meses"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Cada fila es un periodo de ocurrencia; cada columna, la edad de evaluación. Arriba-izquierda = historia; abajo-derecha = futuro estimado"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 17,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-fac",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_factores",
+                  "fields": [
+                    {
+                      "name": "cobertura",
+                      "expression": "`cobertura`"
+                    },
+                    {
+                      "name": "f12_24",
+                      "expression": "`f12_24`"
+                    },
+                    {
+                      "name": "f24_36",
+                      "expression": "`f24_36`"
+                    },
+                    {
+                      "name": "f36_48",
+                      "expression": "`f36_48`"
+                    },
+                    {
+                      "name": "f48_60",
+                      "expression": "`f48_60`"
+                    },
+                    {
+                      "name": "f60_72",
+                      "expression": "`f60_72`"
+                    },
+                    {
+                      "name": "cdf12",
+                      "expression": "`cdf12`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "cobertura",
+                    "displayName": "Cobertura"
+                  },
+                  {
+                    "fieldName": "f12_24",
+                    "displayName": "12→24"
+                  },
+                  {
+                    "fieldName": "f24_36",
+                    "displayName": "24→36"
+                  },
+                  {
+                    "fieldName": "f36_48",
+                    "displayName": "36→48"
+                  },
+                  {
+                    "fieldName": "f48_60",
+                    "displayName": "48→60"
+                  },
+                  {
+                    "fieldName": "f60_72",
+                    "displayName": "60→72"
+                  },
+                  {
+                    "fieldName": "cdf12",
+                    "displayName": "Factor a último desde 12m"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Factores de desarrollo edad-a-edad (ponderados por volumen)"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 23,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-h3",
+            "multilineTextboxSpec": {
+              "lines": [
+                "### Siniestralidad: lo que se ve hoy vs lo que costará al final"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 28,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-sin",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_sin_periodo",
+                  "fields": [
+                    {
+                      "name": "periodo",
+                      "expression": "`periodo`"
+                    },
+                    {
+                      "name": "valor",
+                      "expression": "`valor`"
+                    },
+                    {
+                      "name": "tipo",
+                      "expression": "`tipo`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "periodo",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x"
+                    }
+                  },
+                  "displayName": "Periodo de ocurrencia"
+                },
+                "y": {
+                  "fieldName": "valor",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Siniestralidad %"
+                },
+                "label": {
+                  "show": true
+                },
+                "color": {
+                  "fieldName": "tipo",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "Medición"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Siniestralidad reportada vs última estimada por periodo"
+              },
+              "mark": {
+                "colors": [
+                  "#919191",
+                  "#00A972"
+                ],
+                "layout": "group"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 29,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "p4-det",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_res_det",
+                  "fields": [
+                    {
+                      "name": "cobertura",
+                      "expression": "`cobertura`"
+                    },
+                    {
+                      "name": "periodo",
+                      "expression": "`periodo`"
+                    },
+                    {
+                      "name": "edad_meses",
+                      "expression": "`edad_meses`"
+                    },
+                    {
+                      "name": "pagado",
+                      "expression": "`pagado`"
+                    },
+                    {
+                      "name": "caso",
+                      "expression": "`caso`"
+                    },
+                    {
+                      "name": "ultimo",
+                      "expression": "`ultimo`"
+                    },
+                    {
+                      "name": "requerida",
+                      "expression": "`requerida`"
+                    },
+                    {
+                      "name": "suficiencia",
+                      "expression": "`suficiencia`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "cobertura",
+                    "displayName": "Cobertura"
+                  },
+                  {
+                    "fieldName": "periodo",
+                    "displayName": "Periodo"
+                  },
+                  {
+                    "fieldName": "edad_meses",
+                    "displayName": "Edad (m)"
+                  },
+                  {
+                    "fieldName": "pagado",
+                    "displayName": "Pagado"
+                  },
+                  {
+                    "fieldName": "caso",
+                    "displayName": "Reserva de caso"
+                  },
+                  {
+                    "fieldName": "ultimo",
+                    "displayName": "Último estimado"
+                  },
+                  {
+                    "fieldName": "requerida",
+                    "displayName": "Reserva requerida"
+                  },
+                  {
+                    "fieldName": "suficiencia",
+                    "displayName": "Suficiencia"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Detalle de reservas por cobertura y periodo"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 35,
+            "width": 6,
+            "height": 7
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    }
+  }
+}

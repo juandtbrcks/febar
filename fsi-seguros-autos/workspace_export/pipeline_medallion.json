@@ -1,0 +1,26 @@
+{
+  "catalog": "demo_catalog",
+  "channel": "CURRENT",
+  "continuous": false,
+  "development": true,
+  "libraries": [
+    {
+      "notebook": {
+        "path": "/Workspace/Users/<tu_usuario>/seguros_demo/pipeline1_bronze_silver"
+      }
+    },
+    {
+      "notebook": {
+        "path": "/Workspace/Users/<tu_usuario>/seguros_demo/pipeline2_star"
+      }
+    },
+    {
+      "notebook": {
+        "path": "/Workspace/Users/<tu_usuario>/seguros_demo/pipeline3_cuarentena"
+      }
+    }
+  ],
+  "name": "seguros_medallion",
+  "schema": "seguros_demo",
+  "serverless": true
+}

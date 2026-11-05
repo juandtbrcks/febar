@@ -1,0 +1,8 @@
+command: ["streamlit", "run", "app.py", "--server.headless", "true"]
+env:
+  - name: WAREHOUSE_ID
+    valueFrom: sql-warehouse
+  - name: MLFLOW_EXPERIMENT
+    value: /Users/<tu_usuario>/seguros_agente_siu
+  - name: LAKEBASE_ENDPOINT
+    value: projects/seguros-siu/branches/production/endpoints/primary

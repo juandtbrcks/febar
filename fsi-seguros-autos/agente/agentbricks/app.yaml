@@ -1,0 +1,29 @@
+command:
+- uv
+- run
+- start-server
+env:
+- name: WAREHOUSE_ID
+  value: <WAREHOUSE_ID>
+- name: AGENTE_ORIGEN
+  value: agentbricks
+- name: MLFLOW_TRACKING_URI
+  value: databricks
+- name: MLFLOW_EXPERIMENT_ID
+  value: '<ID>'
+- name: AGENT_SESSION_STORE
+  value: seguros-siu-sessions
+- name: PIP_INDEX_URL
+  value: https://pypi.org/simple/
+- name: UV_INDEX_URL
+  value: https://pypi.org/simple/
+- name: UV_DEFAULT_INDEX
+  value: https://pypi.org/simple/
+- name: DATABRICKS_AGENTBRICKS_RUNTIME_STORE_LAKEBASE_BRANCH
+  value: projects/databricks-internal-custom-agents/branches/production
+- name: DATABRICKS_AGENTBRICKS_RUNTIME_STORE_DATABASE
+  value: runtime-agent-bricks-inbur-<UUID>
+- name: DATABRICKS_AGENTBRICKS_RUNTIME_STORE_USERNAME
+  value: <UUID>
+- name: DATABRICKS_AGENTBRICKS_RUNTIME_STORE_SCHEMA
+  value: databricks_agentkit_runtime
